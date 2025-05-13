@@ -11,7 +11,7 @@ Python, C/C++, Web development <br/>
 ## Hobbies
 ♟️ Chess <br/>
 🏸 Badminton/Soccer <br/>
-🎮 Vido games <br/>
+🎮 Video games <br/>
 
 
 [Email](mailto:ayannalawade@gmail.com)
