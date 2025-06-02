@@ -17,4 +17,5 @@ Python, C/C++, Web development <br/>
 [Email](mailto:ayannalawade@gmail.com)
 
 
+[![Ayan's GitHub stats](https://github-readme-stats.vercel.app/api?username=Ayan-Nalawade)](https://github.com/anuraghazra/github-readme-stats)
 [![GitHub Streak](https://github-readme-streak-stats.herokuapp.com?user=Ayan-Nalawade&theme=dark&hide_border=true)](https://git.io/streak-stats)
