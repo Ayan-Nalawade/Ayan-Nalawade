@@ -25,7 +25,7 @@ Python, C/C++, Web development <br/>
 
 
 
-[![Ayan's GitHub stats](https://github-readme-stats.vercel.app/api?username=Ayan-Nalawade&show_icons=true&theme=radical)](https://github.com/anuraghazra/github-readme-stats)
+[![Ayan Nalawade's GitHub stats](https://github-stats-extended.vercel.app/api?username=Ayan-Nalawade)](https://github.com/stats-organization/github-stats-extended)
 <!--[![GitHub Streak](https://github-readme-streak-stats.herokuapp.com?user=Ayan-Nalawade&theme=dark&hide_border=true)](https://git.io/streak-stats) -->
 <!--https://github.com/alexandresanlim/Badges4-README.md-Profile?tab=readme-ov-file#how-to-use -->
 
