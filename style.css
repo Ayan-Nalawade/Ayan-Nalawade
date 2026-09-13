@@ -1,206 +1,77 @@
-:root{
-  --ground:#f4f1e4;
-  --ink:#152e24;
-  --ink-soft:#4a5a45;
-  --accent:#d9584f;
-  --sign:#1f6b3a;
-  --sign-edge:#0f5a30;
-  --cork:#d9b48c;
-  --cork-frame:#b98761;
-  --paper:#f6f4ea;
-  --paper-edge:#cfd6d8;
-  --pin-edge:#7e3226;
-  --post:#6f573c;
-}
-
+:root{--ground:#f4f1e4;--ink:#152e24;--ink-soft:#4a5a45;--accent:#d9584f;--sign:#1f6b3a;--sign-edge:#0f5a30;--cork:#d9b48c;--cork-frame:#b98761;
+--paper:#f6f4ea;--paper-edge:#cfd6d8;--pin-edge:#7e3226;--post:#6f573c;}
 *{box-sizing:border-box;}
 html{-webkit-text-size-adjust:100%;}
-body{
-  margin:0;
-  background:var(--ground);
-  color:var(--ink);
-  font-family:'Work Sans',system-ui,sans-serif;
-  font-weight:400;
-  font-size:17px;
-  line-height:1.6;
-}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:'Work Sans',system-ui,sans-serif;font-weight:400;font-size:17px;line-height:1.6;}
 img{max-width:100%;height:auto;}
 p{margin:0;}
 a{color:inherit;text-decoration:none;}
 a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
-
-/* the walk itself: fixed behind everything, decorative, pans with scroll */
-.park{
-  position:fixed;left:0;top:0;display:block;   /* scene.js sets the exact px size; a % here would resample the art */
-  z-index:0;pointer-events:none;
-  image-rendering:crisp-edges;image-rendering:pixelated;
-}
+.park{position:fixed;left:0;top:0;display:block;z-index:0;pointer-events:none;image-rendering:crisp-edges;image-rendering:pixelated;}
 .stage{position:relative;z-index:2;}
-
-/* ---------- stops ---------- */
 .stop{position:relative;padding:9vh 6vw;}
 body:not(.panels) .stop{min-height:100vh;display:flex;flex-direction:column;justify-content:center;}
-
-/* ---------- text set straight onto the sky (stops 1 and 4) ---------- */
-/* default is the safe one: no scene behind it, so it gets its own ground. the white-on-sky
-   treatment only switches on once a canvas is actually painting a sky to sit on. */
-.sky-text{
-  max-width:36ch;color:var(--ink);text-shadow:none;
-  background:rgba(246,244,234,.85);padding:20px 22px;
-}
-/* a drifting cloud or the tower passes behind this, and white type on a white cloud turns to
-   mush - the drop shadow gets a hard 1px outline so the letters hold their edge over anything */
-body.scene .sky-text{
-  color:#fff;background:none;padding:0;
-  text-shadow:2px 2px 0 var(--ink),1px 0 0 var(--ink),-1px 0 0 var(--ink),0 1px 0 var(--ink),0 -1px 0 var(--ink);
-}
+.sky-text{max-width:36ch;color:var(--ink);text-shadow:none;background:rgba(246,244,234,.85);padding:20px 22px;}
+body.scene .sky-text{color:#fff;background:none;padding:0;text-shadow:2px 2px 0 var(--ink),1px 0 0 var(--ink),-1px 0 0 var(--ink),0 1px 0 var(--ink),0 -1px 0 var(--ink);}
 .sky-text .hey{font-size:1rem;font-weight:500;letter-spacing:.02em;}
-.sky-text h1{
-  margin:4px 0 0;font-family:'Work Sans',system-ui,sans-serif;font-weight:700;
-  font-size:clamp(3rem,8vw,6rem);line-height:.96;letter-spacing:-.025em;
-  color:inherit;
-}
-.sky-text h2{
-  margin:0;font-family:'Work Sans',system-ui,sans-serif;font-weight:700;
-  font-size:clamp(2rem,4.5vw,3.2rem);line-height:1.02;letter-spacing:-.02em;
-  color:inherit;
-}
+.sky-text h1{margin:4px 0 0;font-family:'Work Sans',system-ui,sans-serif;font-weight:700;font-size:clamp(3rem,8vw,6rem);line-height:.96;letter-spacing:-.025em;color:inherit;}
+.sky-text h2{margin:0;font-family:'Work Sans',system-ui,sans-serif;font-weight:700;font-size:clamp(2rem,4.5vw,3.2rem);line-height:1.02;letter-spacing:-.02em;color:inherit;}
 .sky-text .line{margin-top:16px;font-size:1.1rem;font-weight:500;}
 .links{margin-top:22px;display:flex;gap:24px;flex-wrap:wrap;font-size:.95rem;font-weight:500;}
 a.link{text-decoration:underline;text-decoration-color:transparent;text-underline-offset:4px;transition:text-decoration-color .1s ease,color .1s ease;}
 a.link:hover,a.link:focus-visible{color:var(--accent);text-decoration-color:var(--accent);}
-.hint{
-  margin-top:26px;font-family:'Fira Code',monospace;font-size:.78rem;
-  opacity:1;transition:opacity .5s ease;
-}
+.hint{margin-top:26px;font-family:'Fira Code',monospace;font-size:.78rem;opacity:1;transition:opacity .5s ease;}
 body.scrolled .hint{opacity:0;}
 .colophon{margin-top:26px;font-family:'Fira Code',monospace;font-size:.72rem;}
-
-.btn{
-  display:inline-block;margin-top:24px;padding:12px 20px;
-  background:var(--paper);color:var(--ink);border:2px solid var(--ink);
-  box-shadow:3px 3px 0 var(--ink);text-shadow:none;
-  font-weight:700;font-size:1rem;line-height:1;
-  transition:transform .1s ease,box-shadow .1s ease;
-}
+.btn{display:inline-block;margin-top:24px;padding:12px 20px;background:var(--paper);color:var(--ink);
+border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);text-shadow:none;font-weight:700;font-size:1rem;line-height:1;transition:transform .1s ease,box-shadow .1s ease;}
 .btn:hover,.btn:focus-visible{transform:translate(1px,1px);box-shadow:2px 2px 0 var(--ink);}
-
-/* the greeting's line and links get laid down left to right on first sight */
 .stop-street.armed .line,.stop-street.armed .links{clip-path:inset(0 100% 0 0);}
 .stop-street.armed.in .line{clip-path:inset(0 -2px 0 0);transition:clip-path .85s cubic-bezier(.22,.61,.36,1) .12s;}
 .stop-street.armed.in .links{clip-path:inset(0 -2px 0 0);transition:clip-path .7s cubic-bezier(.22,.61,.36,1) .42s;}
-
-/* ---------- stop 2: the park sign, a real object ---------- */
 .sign-wrap{display:flex;flex-direction:column;align-items:center;width:100%;max-width:440px;}
-.sign{
-  width:100%;background-color:var(--sign);border:3px solid var(--sign-edge);
-  padding:9px;color:#fff;
-}
+.sign{width:100%;background-color:var(--sign);border:3px solid var(--sign-edge);padding:9px;color:#fff;}
 .sign-inner{border:3px solid var(--paper);padding:20px 22px 22px;}
-.sign-title{
-  font-weight:700;font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;
-  margin-bottom:14px;
-}
+.sign-title{font-weight:700;font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px;}
 .sign-inner p+p{margin-top:12px;}
 .sign-inner p:not(.sign-title){font-size:1.08rem;line-height:1.45;font-weight:400;}
 .post{width:14px;height:90px;background:var(--post);}
-
-/* ---------- stop 3: the notice board ---------- */
-.board{
-  width:100%;max-width:560px;padding:12px;
-  border:8px solid var(--cork-frame);
-  background-color:var(--cork);
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4' fill='%23d9b48c'/%3E%3Crect x='1' y='1' width='1' height='1' fill='%23c8a075'/%3E%3C/svg%3E");
-}
-.board-head{
-  background:var(--paper);border:1px solid var(--paper-edge);
-  padding:6px 12px;margin-bottom:12px;transform:rotate(-.6deg);
-}
+.board{width:100%;max-width:560px;padding:12px;border:8px solid var(--cork-frame);background-color:var(--cork);
+background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4' fill='%23d9b48c'/%3E%3Crect x='1' y='1' width='1' height='1' fill='%23c8a075'/%3E%3C/svg%3E");}
+.board-head{background:var(--paper);border:1px solid var(--paper-edge);padding:6px 12px;margin-bottom:12px;transform:rotate(-.6deg);}
 .board-title{font-weight:700;font-size:1.02rem;color:var(--ink);line-height:1.2;}
 .board-cap{margin-top:3px;font-family:'Fira Code',monospace;font-size:.62rem;color:var(--ink-soft);}
-
 .pins{display:grid;gap:14px;}
 .pins-photo{grid-template-columns:repeat(3,minmax(0,1fr));}
 .pins-card{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:14px;}
-
 .pin{position:relative;display:block;transition:transform .15s ease;}
-.pin::before{
-  content:'';position:absolute;top:-5px;left:50%;margin-left:-5px;
-  width:10px;height:10px;border-radius:50%;
-  background:var(--accent);box-shadow:0 2px 0 var(--pin-edge);
-  z-index:2;
-}
+.pin::before{content:'';position:absolute;top:-5px;left:50%;margin-left:-5px;width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 2px 0 var(--pin-edge);z-index:2;}
 .pin:nth-child(3n+1){transform:rotate(-1.5deg);}
 .pin:nth-child(3n+2){transform:rotate(1deg);}
 .pin:nth-child(3n+3){transform:rotate(-.5deg);}
 .pin:hover,.pin:focus-visible{transform:rotate(0);}
-
 .pin-photo{background:var(--paper);border:1px solid var(--paper-edge);padding:6px 6px 7px;}
-.pin-photo img{
-  display:block;width:100%;aspect-ratio:3/2;object-fit:cover;
-  image-rendering:auto;background:#e3e0d4;
-}
+.pin-photo img{display:block;width:100%;aspect-ratio:3/2;object-fit:cover;image-rendering:auto;background:#e3e0d4;}
 .pin-title{display:block;margin-top:6px;font-weight:500;font-size:.72rem;line-height:1.28;color:var(--ink);}
 .pin-photo.title-only{min-height:92px;display:flex;align-items:center;}
 .pin-photo.title-only .pin-title{margin-top:0;font-size:.8rem;}
-
-.pin-card{
-  background-color:var(--paper);
-  background-image:repeating-linear-gradient(to bottom,transparent 0 21px,#c3ddee 21px 22px);
-  border:1px solid var(--paper-edge);border-top:3px solid #cf6250;
-  padding:7px 10px 8px;
-}
+.pin-card{background-color:var(--paper);background-image:repeating-linear-gradient(to bottom,transparent 0 21px,#c3ddee 21px 22px);border:1px solid var(--paper-edge);border-top:3px solid #cf6250;padding:7px 10px 8px;}
 .card-name{display:block;font-weight:700;font-size:.88rem;line-height:1.2;}
 .card-line{display:block;margin-top:3px;font-size:.74rem;line-height:1.34;color:var(--ink-soft);}
 .card-lang{display:block;margin-top:5px;font-family:'Fira Code',monospace;font-size:.62rem;color:var(--accent);}
-
-/* the board has to fit one screen or the panel mechanic backs out for the whole site; on short
-   laptop viewports (1366x768 leaves ~650px) it gives up a little width and type size to do so */
-@media (max-height:720px){
-  body.panels .board{max-width:500px;}
-  body.panels .pin-title{font-size:.68rem;}
-  body.panels .card-line{font-size:.7rem;}
-}
-
-/* ---------- panels: scrolling hands one whole screen to the next, nothing slides ---------- */
+@media (max-height:720px){body.panels .board{max-width:500px;}body.panels .pin-title{font-size:.68rem;}body.panels .card-line{font-size:.7rem;}}
 .scroll-space{display:none;}
 body.panels{overflow-x:hidden;}
 body.panels .stage{position:fixed;inset:0;z-index:2;}
 body.panels main{display:contents;}
-body.panels .panel{
-  position:absolute;inset:0;
-  display:flex;flex-direction:column;justify-content:center;
-  overflow:hidden;will-change:opacity,transform;
-}
+body.panels .panel{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;overflow:hidden;will-change:opacity,transform;}
 body.panels .panel>*{width:100%;}
 body.panels .scroll-space{display:block;}
 body.panels .stop{padding:0 7vw;min-height:0;}
-/* auto margin beats justify-content, so the sky stops sit top-left with no :has() needed */
 body.panels .stop-street,body.panels .stop-tree{margin-bottom:auto;padding-top:11vh;}
-/* the sign owns the left, the board the right - the rest of each screen is the scene */
-body.panels .stop-gate,body.panels .stop-board{
-  display:grid;grid-template-columns:minmax(0,45%) minmax(0,55%);align-items:center;
-}
+body.panels .stop-gate,body.panels .stop-board{display:grid;grid-template-columns:minmax(0,45%) minmax(0,55%);align-items:center;}
 body.panels .stop-board .board{grid-column:2;justify-self:center;}
-
-/* ---------- small screens / no panels: the canvas stays, the text gets a ground ---------- */
-@media (max-width:859px),(max-height:619px){
-  .park{opacity:.9;}
-  /* a sky is behind it here too, but the text is too big a share of a small screen to trust to it */
-  .sky-text,body.scene .sky-text{
-    max-width:none;background:rgba(246,244,234,.85);
-    color:var(--ink);text-shadow:none;padding:20px 22px;
-  }
-  .board{max-width:100%;}
-  .pins-photo{grid-template-columns:repeat(2,minmax(0,1fr));}
-  .pins-card{grid-template-columns:minmax(0,1fr);}
-  .sign-wrap{max-width:100%;}
-}
-@media (max-width:600px){
-  .stop{padding:7vh 6vw;}
-  .sign-inner{padding:16px 16px 18px;}
-}
-
-@media (prefers-reduced-motion:reduce){
-  .pin,.btn,a.link,.hint{transition:none;}
-}
+@media (max-width:859px),(max-height:619px){.park{opacity:.9;}.sky-text,body.scene .sky-text{max-width:none;background:rgba(246,244,234,.85);
+color:var(--ink);text-shadow:none;padding:20px 22px;}.board{max-width:100%;}.pins-photo{grid-template-columns:repeat(2,minmax(0,1fr));}.pins-card{grid-template-columns:minmax(0,1fr);}.sign-wrap{max-width:100%;}}
+@media (max-width:600px){.stop{padding:7vh 6vw;}.sign-inner{padding:16px 16px 18px;}}
+@media (prefers-reduced-motion:reduce){.pin,.btn,a.link,.hint{transition:none;}}

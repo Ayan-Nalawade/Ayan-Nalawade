@@ -1,137 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="color-scheme" content="light">
-<title>Ayan Nalawade</title>
-<meta name="description" content="Ayan Nalawade &mdash; Grade 12 student @ LHSS. A 1-bit full adder built from loose transistors, a sumo bot, and a chess policy network.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Work+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-<canvas class="park" id="park" aria-hidden="true"></canvas>
-
-<div class="stage">
-
-<div class="panel">
-<header class="stop stop-street">
-  <div class="sky-text">
-    <p class="hey">Hey, it's</p>
-    <h1>Ayan Nalawade</h1>
-    <p class="line">Grade 12 Student @ LHSS</p>
-    <nav class="links" aria-label="Contact">
-      <a class="link" href="https://github.com/Ayan-Nalawade">GitHub</a>
-      <a class="link" href="https://www.linkedin.com/in/ayan-nalawade-5a9475355">LinkedIn</a>
-      <a class="link" href="mailto:ayannalawade@gmail.com">Email</a>
-    </nav>
-    <p class="hint">scroll &rarr;</p>
-  </div>
-</header>
-</div>
-
-<main>
-
-<div class="panel">
-<section class="stop stop-gate" id="about">
-  <div class="sign-wrap">
-    <div class="sign">
-      <div class="sign-inner">
-        <p class="sign-title">Ayan Nalawade</p>
-        <p>I'm in Grade 12 at Laurel Heights. Most of what I make ends up on the blog: a full adder built from loose transistors, a sumo bot that taught me to trust the datasheet over the schematic, and a lot of hackathons.</p>
-        <p>I like the part of a project where it doesn't work yet. That's usually where I learn something.</p>
-        <p>When I'm not building, I'm playing chess or badminton, or off somewhere with air cadets.</p>
-      </div>
-    </div>
-    <div class="post" aria-hidden="true"></div>
-  </div>
-</section>
-</div>
-
-<div class="panel">
-<section class="stop stop-board" id="blog">
-  <div class="board">
-    <div class="board-head">
-      <p class="board-title">From the blog</p>
-      <p class="board-cap">pulled live from ayannalawade-blog.vercel.app</p>
-    </div>
-
-    <div class="pins pins-photo" id="pins">
-      <a class="pin pin-photo" href="https://ayannalawade-blog.vercel.app/">
-        <img src="https://ayannalawade-blog.vercel.app/image_data/FullAdderBreadboard/FinalThumbnail.png" alt="Building My Own Full Adder" loading="lazy" referrerpolicy="no-referrer">
-        <span class="pin-title">Building My Own Full Adder</span>
-      </a>
-      <a class="pin pin-photo" href="https://ayannalawade-blog.vercel.app/">
-        <img src="https://ayannalawade-blog.vercel.app/image_data/SumoBot/SumoBotDesign.png" alt="Sumo Bot 2025" loading="lazy" referrerpolicy="no-referrer">
-        <span class="pin-title">Sumo Bot 2025</span>
-      </a>
-      <a class="pin pin-photo" href="https://ayannalawade-blog.vercel.app/">
-        <img src="https://ayannalawade-blog.vercel.app/image_data/ChessHacks/outbot.png" alt="Chess Hacks 2025" loading="lazy" referrerpolicy="no-referrer">
-        <span class="pin-title">Chess Hacks 2025</span>
-      </a>
-      <a class="pin pin-photo" href="https://ayannalawade-blog.vercel.app/">
-        <img src="https://ayannalawade-blog.vercel.app/image_data/DocsGPT/Homepage.png" alt="JamHacks 9 (2025)" loading="lazy" referrerpolicy="no-referrer">
-        <span class="pin-title">JamHacks 9 (2025)</span>
-      </a>
-      <a class="pin pin-photo" href="https://ayannalawade-blog.vercel.app/">
-        <img src="https://ayannalawade-blog.vercel.app/image_data/SpurHacks/MainPage.png" alt="SpurHacks 2025" loading="lazy" referrerpolicy="no-referrer">
-        <span class="pin-title">SpurHacks 2025</span>
-      </a>
-      <a class="pin pin-photo" href="https://ayannalawade-blog.vercel.app/">
-        <img src="https://ayannalawade-blog.vercel.app/image_data/Catalyst/WithOurTeam.jpg" alt="Catalyst" loading="lazy" referrerpolicy="no-referrer">
-        <span class="pin-title">Catalyst</span>
-      </a>
-    </div>
-
-    <div class="pins pins-card">
-      <a class="pin pin-card" href="https://github.com/Ayan-Nalawade/Chat">
-        <span class="card-name">Chat</span>
-        <span class="card-line">Free GPT-4 and Claude access back when API keys were scarce.</span>
-        <span class="card-lang">Python</span>
-      </a>
-      <a class="pin pin-card" href="https://github.com/Ayan-Nalawade/ChessHacks">
-        <span class="card-name">ChessHacks</span>
-        <span class="card-line">A policy network trained on Lichess games, to see if it could beat me.</span>
-        <span class="card-lang">PyTorch</span>
-      </a>
-      <a class="pin pin-card" href="https://github.com/Ayan-Nalawade/JamHacks-DocsGPT">
-        <span class="card-name">DocsGPT</span>
-        <span class="card-line">An AI documentation assistant, built over a weekend at JamHacks 9.</span>
-        <span class="card-lang">TypeScript</span>
-      </a>
-      <a class="pin pin-card" href="https://github.com/Ayan-Nalawade/GS-Onboarding">
-        <span class="card-name">GS-Onboarding</span>
-        <span class="card-line">Ground-station firmware onboarding for a satellite team.</span>
-        <span class="card-lang">Python</span>
-      </a>
-    </div>
-  </div>
-</section>
-</div>
-
-</main>
-
-<div class="panel">
-<footer class="stop stop-tree" id="contact">
-  <div class="sky-text">
-    <h2>That's the walk.</h2>
-    <p class="line">The afternoon's over on the blog.</p>
-    <a class="btn" href="https://ayannalawade-blog.vercel.app/">Read the blog &rarr;</a>
-    <nav class="links" aria-label="Contact">
-      <a class="link" href="https://github.com/Ayan-Nalawade">GitHub</a>
-      <a class="link" href="https://www.linkedin.com/in/ayan-nalawade-5a9475355">LinkedIn</a>
-      <a class="link" href="mailto:ayannalawade@gmail.com">Email</a>
-    </nav>
-    <p class="colophon">Made with VS Code</p>
-  </div>
-</footer>
-</div>
-
-</div>
-
-<script src="scene.js"></script>
-<script src="app.js"></script>
-</body>
-</html>
+<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <meta name="color-scheme" content="light"> <title>Ayan
+Nalawade</title> <meta name="description" content="Ayan Nalawade &mdash; Grade 12 student @ LHSS. A 1-bit full adder built from loose transistors, a sumo bot, and a chess policy network."> <link
+rel="preconnect" href="https://fonts.googleapis.com"> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> <link
+href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Work+Sans:wght@400;500;700&display=swap" rel="stylesheet"> <link rel="stylesheet" href="style.css"> </head> <body> <canvas
+class="park" id="park" aria-hidden="true"></canvas> <div class="stage"> <div class="panel"> <header class="stop stop-street"> <div class="sky-text"> <p class="hey">Hey, it's</p> <h1>Ayan Nalawade</h1>
+<p class="line">Grade 12 Student @ LHSS</p> <nav class="links" aria-label="Contact"> <a class="link" href="https://github.com/Ayan-Nalawade">GitHub</a> <a class="link"
+href="https://www.linkedin.com/in/ayan-nalawade-5a9475355">LinkedIn</a> <a class="link" href="mailto:ayannalawade@gmail.com">Email</a> </nav> <p class="hint">scroll &rarr;</p> </div> </header> </div>
+<main> <div class="panel"> <section class="stop stop-gate" id="about"> <div class="sign-wrap"> <div class="sign"> <div class="sign-inner"> <p class="sign-title">Ayan Nalawade</p> <p>I'm in Grade 12 at
+Laurel Heights. Most of what I make ends up on the blog: a full adder built from loose transistors, a sumo bot that taught me to trust the datasheet over the schematic, and a lot of hackathons.</p>
+<p>I like the part of a project where it doesn't work yet. That's usually where I learn something.</p> <p>When I'm not building, I'm playing chess or badminton, or off somewhere with air cadets.</p>
+</div> </div> <div class="post" aria-hidden="true"></div> </div> </section> </div> <div class="panel"> <section class="stop stop-board" id="blog"> <div class="board"> <div class="board-head"> <p
+class="board-title">From the blog</p> <p class="board-cap">pulled live from ayannalawade-blog.vercel.app</p> </div> <div class="pins pins-photo" id="pins"> <a class="pin pin-photo"
+href="https://ayannalawade-blog.vercel.app/"> <img src="https://ayannalawade-blog.vercel.app/image_data/FullAdderBreadboard/FinalThumbnail.png" alt="Building My Own Full Adder" loading="lazy"
+referrerpolicy="no-referrer"> <span class="pin-title">Building My Own Full Adder</span> </a> <a class="pin pin-photo" href="https://ayannalawade-blog.vercel.app/"> <img
+src="https://ayannalawade-blog.vercel.app/image_data/SumoBot/SumoBotDesign.png" alt="Sumo Bot 2025" loading="lazy" referrerpolicy="no-referrer"> <span class="pin-title">Sumo Bot 2025</span> </a> <a
+class="pin pin-photo" href="https://ayannalawade-blog.vercel.app/"> <img src="https://ayannalawade-blog.vercel.app/image_data/ChessHacks/outbot.png" alt="Chess Hacks 2025" loading="lazy"
+referrerpolicy="no-referrer"> <span class="pin-title">Chess Hacks 2025</span> </a> <a class="pin pin-photo" href="https://ayannalawade-blog.vercel.app/"> <img
+src="https://ayannalawade-blog.vercel.app/image_data/DocsGPT/Homepage.png" alt="JamHacks 9 (2025)" loading="lazy" referrerpolicy="no-referrer"> <span class="pin-title">JamHacks 9 (2025)</span> </a> <a
+class="pin pin-photo" href="https://ayannalawade-blog.vercel.app/"> <img src="https://ayannalawade-blog.vercel.app/image_data/SpurHacks/MainPage.png" alt="SpurHacks 2025" loading="lazy"
+referrerpolicy="no-referrer"> <span class="pin-title">SpurHacks 2025</span> </a> <a class="pin pin-photo" href="https://ayannalawade-blog.vercel.app/"> <img
+src="https://ayannalawade-blog.vercel.app/image_data/Catalyst/WithOurTeam.jpg" alt="Catalyst" loading="lazy" referrerpolicy="no-referrer"> <span class="pin-title">Catalyst</span> </a> </div> <div
+class="pins pins-card"> <a class="pin pin-card" href="https://github.com/Ayan-Nalawade/Chat"> <span class="card-name">Chat</span> <span class="card-line">Free GPT-4 and Claude access back when API
+keys were scarce.</span> <span class="card-lang">Python</span> </a> <a class="pin pin-card" href="https://github.com/Ayan-Nalawade/ChessHacks"> <span class="card-name">ChessHacks</span> <span
+class="card-line">A policy network trained on Lichess games, to see if it could beat me.</span> <span class="card-lang">PyTorch</span> </a> <a class="pin pin-card"
+href="https://github.com/Ayan-Nalawade/JamHacks-DocsGPT"> <span class="card-name">DocsGPT</span> <span class="card-line">An AI documentation assistant, built over a weekend at JamHacks 9.</span> <span
+class="card-lang">TypeScript</span> </a> <a class="pin pin-card" href="https://github.com/Ayan-Nalawade/GS-Onboarding"> <span class="card-name">GS-Onboarding</span> <span
+class="card-line">Ground-station firmware onboarding for a satellite team.</span> <span class="card-lang">Python</span> </a> </div> </div> </section> </div> </main> <div class="panel"> <footer
+class="stop stop-tree" id="contact"> <div class="sky-text"> <h2>That's the walk.</h2> <p class="line">The afternoon's over on the blog.</p> <a class="btn"
+href="https://ayannalawade-blog.vercel.app/">Read the blog &rarr;</a> <nav class="links" aria-label="Contact"> <a class="link" href="https://github.com/Ayan-Nalawade">GitHub</a> <a class="link"
+href="https://www.linkedin.com/in/ayan-nalawade-5a9475355">LinkedIn</a> <a class="link" href="mailto:ayannalawade@gmail.com">Email</a> </nav> <p class="colophon">Made with VS Code</p> </div> </footer>
+</div> </div> <script src="scene.js"></script> <script src="app.js"></script> </body> </html>
