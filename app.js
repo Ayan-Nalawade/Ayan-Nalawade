@@ -15,7 +15,7 @@ function clearFx(els){
 // the six photo pins ship baked into the HTML. the fetch swaps them for whatever the blog
 // says right now; if it is slow or down, the baked ones stay and the reader never learns
 // there was a network call.
-const BLOG='https://ayannalawade-website.vercel.app/';
+const BLOG='https://ayannalawade-blog.vercel.app/';
 const IMG=BLOG+'image_data/';
 const THUMB=/^(?!.*\.\.)[\w./ -]+\.(png|jpe?g|gif|webp)$/i;   // no .. - the blog builds the path
 

@@ -90,6 +90,13 @@ var BND = [0, 0.16, 0.30, 0.42, 0.53, 0.63, 0.73, 0.83, 0.92, 1];function skyTin
 // y fractions sit high in the sky on purpose: the stop-1 and stop-4 text blocks live in the
 // upper left, and a cumulus parked behind a headline reads as a smudge on the type
 var CL = [[0.38, 0.24, 6], [0.80, 0.20, 9], [0.70, 0.27, 5], [1.05, 0.14, 8], [1.55, 0.16, 8], [2.10, 0.16, 10], [2.55, 0.17, 6]];
+var SKY_GEESE_V = [   // goose skein offsets from the leader, in spacing units: [along-flight, across]. Lopsided
+                       // like a real skein - a longer trailing arm than the other, not a tidy symmetric V.
+  [0, 0], [1, -0.55], [2, -1.05], [3, -1.55], [1, 0.55], [2, 1.05], [3, 1.55], [4, 2.00]];
+var SKY_CIRRUS = [   // high cirrus streaks, well above the cumulus deck: [world x/W, y/HZ, length in u(), seed].
+                      // Parallax .03 barely shifts them across the whole walk (~230px of 2560) - a high,
+                      // near-static deck, the way real cirrus outlasts the cumulus drifting under it.
+  [0.10, 0.026, 150, 5], [0.42, 0.042, 170, 17], [0.80, 0.032, 140, 29]];
 var SKC = [      // skyline materials [body, grid]: blue glass, slate glass, black glass (TD Centre), grey precast, pale stone (FCP)
 ['#4e5d79', '#43506a'], ['#3d4a63', '#323d52'], ['#2c3840', '#26292d'], ['#51565c', '#464b51'], ['#9aa3a6', '#6d777b']];
 var SFC = [   // shop-row bodies: red brick, buff Toronto brick, dark red brick, painted cream, grey, green, tan brick
@@ -126,10 +133,35 @@ var BR = [ // scaffold leaders out of the fork: [tip dx/W, tip dy/H, base width/
           // secondaries], each secondary [fraction up the leader, dx/W, dy/H, base width/trunk]. Upswept.
           [-0.075, -0.30, 0.50, 0.12, [[0.40, -0.07, -0.08, 0.20], [0.70, 0.03, -0.11, 0.14]]],
           [0.012, -0.42, 0.55, 0.12, [[0.35, -0.05, -0.12, 0.18], [0.55, 0.06, -0.10, 0.18]]],
-          [0.085, -0.28, 0.46, 0.12, [[0.45, 0.075, -0.06, 0.20], [0.75, -0.02, -0.10, 0.14]]]];var LIFE_CAR = {
+          [0.085, -0.28, 0.46, 0.12, [[0.45, 0.075, -0.06, 0.20], [0.75, -0.02, -0.10, 0.14]]]];var PT_PALA = [null, null, 0];
+var PT_AUTUMN = [   // a maple's first turn, mid-September: never the whole crown, just one leaf mass recoloured -
+  // shade, body, sky-lit top, sun rim, glint, in two variants (sugar-maple red-orange, a paler gold) so the
+  // handful of coloured trees don't all match each other.
+  ['#4a2318', '#9c3b26', '#c2642f', '#e08a3c', '#f4b45c'],
+  ['#4a3318', '#8f6b1f', '#c2962f', '#e0bb3c', '#f4d65c']];
+var PT_BIRCH_I = 9 /* the one birch in the tree line: maple slot index 9 (world x ~1.24W), on screen mid-park
+                       at stops 2 and 3 only, clear of every calm zone */;
+var PG_FOUNTAIN = {   // the drinking fountain's world x (fraction of W) and ground row (fraction of GH): clear of the path and the flower drift
+  x: 2.60, y: 0.56 };
+var LIFE_CAR = {
   sedan: { L: 4.7, top: [0, 0.60, 0.07, 0.84, 0.35, 0.94, 1.12, 0.97, 1.62, 1.37, 1.95, 1.44, 2.90, 1.44, 3.50, 1.02, 4.20, 0.90, 4.62, 0.80, 4.70, 0.58], bot: 0.20, belt: 0.97, gl: [1.40, 3.40], pil: [2.33, 2.43], wh: [0.95, 3.75], r: 0.32, tail: [0, 0.10, 0.70, 0.84], head: [4.52, 4.70, 0.64, 0.75], seam: [1.42, 2.38, 3.44] },
   van: { L: 5.9, top: [0, 0.45, 0.03, 2.38, 0.14, 2.48, 4.35, 2.48, 4.58, 2.36, 5.08, 1.34, 5.55, 1.10, 5.86, 0.95, 5.90, 0.55], bot: 0.36, belt: 1.30, gl: [4.48, 5.02], pil: [9, 9], wh: [1.05, 4.72], r: 0.35, tail: [0, 0.06, 0.60, 1.15], head: [5.70, 5.90, 0.84, 0.98], seam: [0.04, 3.30, 4.40] }
-};var LIFE_FOLK = [
+};
+var TRAM_V0 = 6, TRAM_RUN = 82 /* the one far-lane timeline (tramSchedule): brake in over TRAM_RUN m, dwell with the doors, ease away the same, then gone */;
+var TRAM_TA = 2 * TRAM_RUN / TRAM_V0, TRAM_TD2 = TRAM_TA, TRAM_TD = 25, TRAM_GAP = 15 /* TRAM_RUN long enough that gateCam clears camX 0.70*W+40, where dwell itself goes off-screen - no camX is left where the wrap could pop in */;
+var TRAM_CYC = TRAM_TA + TRAM_TD + TRAM_TD2 + TRAM_GAP, TRAM_PH0 = TRAM_TA + 10 /* clock 0 sits 10s into the dwell */;
+var TRAM_DOOR = 1.2 /* door slide time, s */;
+var TRAM_SEDAN_WAIT = 2, TRAM_SEDAN_RUN = 25, TRAM_SEDAN_V0 = 7, TRAM_SEDAN_RT = 2 * TRAM_SEDAN_RUN / TRAM_SEDAN_V0;
+var TRAM_CYCL_WAIT = 9, TRAM_CYCL_RUN = 10, TRAM_CYCL_V0 = 4, TRAM_CYCL_RT = 2 * TRAM_CYCL_RUN / TRAM_CYCL_V0;
+var TRAM_XCAR_WAIT = TRAM_CYCL_WAIT + TRAM_CYCL_RT + 2, TRAM_XCAR_RUN = 20, TRAM_XCAR_V0 = 6 /* one more queued car */;
+var TRAM_XCAR_RT = 2 * TRAM_XCAR_RUN / TRAM_XCAR_V0, TRAM_XCAR_BACK = 10 /* back from the cyclist's queue spot, m; kept short of the paved street's ~1.35W extent */;
+var CARS_KIND = [   // near-lane liveries: [profile, [dark, body, light]]. A yellow sedan reads as the cab.
+  ['sedan', ['#1d252b', '#2c3840', '#4a555e']],
+  ['sedan', ['#33251a', '#4b3827', '#6f573c']],
+  ['sedan', ['#6f573c', '#e0a94e', '#f4c869']],
+  ['van', ['#26292d', '#3d4a63', '#6d777b']],
+  ['sedan', ['#151719', '#26292d', '#4a555e']]
+];var LIFE_FOLK = [
   { skin: 1, hair: '#26292d', hl: '#4a555e', top: ['#2c3840', '#3d4a63', '#4e5d79'], bot: ['#26292d', '#33373b', '#4a555e'], shoe: '#26292d', hem: 0.42, bag: '#4a555e' },
   { skin: 2, hair: '#33251a', hl: '#57422a', top: ['#403f2b', '#565438', '#6e6a47'], bot: ['#3d4a63', '#4e5d79', '#6d777b'], shoe: '#33251a', hem: 0.44 },
   { skin: 0, hair: '#26292d', hl: '#4a555e', top: ['#6f573c', '#8a6a3f', '#a8854f'], bot: ['#26292d', '#2c3840', '#3d4a63'], shoe: '#26292d', hem: 0.47, cap: '#2c3840' },
@@ -179,7 +211,7 @@ function mount(canvas, opts) {
   var env = opts.env || readEnv(canvas), visible = env.visible, owed = false;
   var scale = 1, W = 8, H = 8, HZ = 5, WORLD = 32, camX = 0, t = 0;
   var progress = cl01(opts.progress), off, octx, img, buf, skyRow, crowMask;
-  var timer = null, ambient = false, frames = 0, clock = 0, rt = 0, dead = false, key = -1;
+  var timer = null, fast = false, ambient = false, frames = 0, clock = 0, rt = 0, dead = false, key = -1;
 
   // ---------- primitives ----------
   function px(x, y, c) { x = x | 0; y = y | 0; if (x >= 0 && y >= 0 && x < W && y < H) buf[y * W + x] = c; }
@@ -485,6 +517,45 @@ function mount(canvas, opts) {
       if (x < -3 * s || x > W + 3 * s) continue;
       cumulus(x, y, s, i + 1);
     }
+    skyCirrus();
+  }
+  function skyWisp(seed, i, period) {
+    // smooth 0..1 noise for a wisp's clumping and drift, keyed to the streak's own seed and its column
+    // index (not screen x), so the texture travels with the streak as camX and parallax move it
+    var f = i / period, k = f | 0, a = hash(seed * 131 + k * 7 + 3), b = hash(seed * 131 + (k + 1) * 7 + 3);
+    f -= k; f = f * f * (3 - 2 * f);
+    return a + (b - a) * f;
+  }
+  function skyCirrus() {
+    // mare's-tail cirrus, high above the cumulus: thin, patchy, wind-combed streaks blended into the
+    // sky's own colour rather than painted flat, since ice crystals scatter light rather than block it.
+    // They catch the sun before anything else does, so they run warm at dawn and pale out by mid-morning
+    // on the same schedule as the contrail (plane's tq < 0.42), then cross-fade smoothly rather than pop.
+    var wf = cl01(1 - t / 0.42), tr = 246 - 6 * wf, tg = 244 - 30 * wf, tb = 234 - 75 * wf;
+    var i, s, L, y0, seed, x0, j, xx, e, dc, df, g, a, yOff, ea, pc, pf, base;
+    for (i = 0; i < SKY_CIRRUS.length; i++) {
+      s = SKY_CIRRUS[i]; L = u(s[2]); y0 = Math.round(s[1] * HZ); seed = s[3];
+      x0 = sxOf(s[0] * W, 0.03);
+      if (x0 + L < 0 || x0 > W) continue;
+      ea = Math.max(2, Math.round(0.16 * L)); pc = Math.max(3, Math.round(L / 18)); pf = u(9);
+      for (j = 0; j < L; j++) {
+        xx = x0 + j; if (xx < 0 || xx >= W) continue;
+        e = Math.min(1, j / ea, (L - 1 - j) / ea); if (e <= 0) continue;
+        // the coarse scale is a real gate now, not just a dimmer: below its own midline the tuft is
+        // fully blank (torn gap), and only the top of its sweep is fully solid, so roughly a third to
+        // half of each streak's length is genuinely empty sky. The finer scale only ripples density and
+        // vertical wander inside a tuft that has already gated open.
+        dc = skyWisp(seed, j, pc); df = skyWisp(seed + 53, j, pf);
+        g = cl01((dc - 0.46) / 0.16); if (g <= 0) continue;
+        a = e * g * g * (0.55 + 0.45 * df) * (0.62 + 0.30 * wf);
+        if (a < 0.06) continue;
+        yOff = Math.round((df - 0.5) * u(3));
+        base = skyPix(xx, y0 + yOff);
+        px(xx, y0 + yOff, skyTint(base, tr, tg, tb, a));
+        px(xx, y0 + yOff - 1, skyTint(base, tr, tg, tb, a * 0.45));
+        px(xx, y0 + yOff + 1, skyTint(base, tr, tg, tb, a * 0.45));
+      }
+    }
   }
   function plane() {
     // an airliner at cruise ~20 deg up, so seen almost side-on from below, nose left: full-length
@@ -564,6 +635,26 @@ function mount(canvas, opts) {
       ph = (((clock * 10) | 0) + 9 * i) % 28;
       fr = ph < 12 ? [0, 1, 2, 1][ph % 4] : 3;
       gull(x, y, s, fr, 1, c, tip);
+    }
+    skyGeese();
+  }
+  function skyGeese() {
+    // a skein of Canada geese, high and steady, crossing right to left once every couple of minutes -
+    // mid-September is peak migration through Toronto. Dark above and below at this distance and size,
+    // so unlike the gulls they never pale out with the sky; slower wingbeat, no white strobe of course.
+    var sp = u(5), y0 = Math.round(HZ * 0.072), m = u(22), P = W + 2 * m, speed = 21;
+    var x0 = Math.round((((0.68 * W - clock * speed - camX * 0.15) % P) + P) % P) - m;
+    var span = Math.round(sp * 4.3);
+    if (x0 + span < -m || x0 - span > W + m) return;
+    var c = C('#26292d'), i, k, gx, gy, s, ph, fr;
+    for (i = 0; i < SKY_GEESE_V.length; i++) {
+      k = SKY_GEESE_V[i];
+      gx = x0 + Math.round(k[0] * sp); gy = y0 + Math.round(k[1] * sp);
+      if (gx < -m || gx > W + m) continue;
+      s = u(i === 0 ? 2.7 : 2.3);
+      ph = (((clock * 9) | 0) + 7 * i) % 30;
+      fr = ph < 14 ? [0, 1, 2, 1][ph % 4] : 3;
+      gull(gx, gy, s, fr, -1, c, c);
     }
   }  function cityLayer(hz, f) {
     // one distance layer's palette, built once a frame; f is its haze fraction
@@ -737,7 +828,30 @@ function mount(canvas, opts) {
     } else if (typ === 4) {                                    // mechanical penthouse
       pa = Math.round(bw * (0.2 + hash(i * 13) * 0.15)); pb = Math.round(bw * 0.45); y = Math.max(3, u(1.8));
       rect(sx + pa, mt - y, pb, y, L.pent); hline(sx + pa, sx + pa + pb - 1, mt - y, L.roof);
+    } else if (bh > Math.round(HZ * 0.15) && hash(i * 41 + 17) < 0.15) {   // a tower crane going up: Toronto
+      cityCrane(sx, bw, mt, i, L);                                        // always has several at once
     }
+  }
+  function cityCrane(sx, bw, mt, seed, L) {
+    // a tower crane on a roof under construction: mast above the parapet, a long jib swung out over
+    // the street, a short counter-jib with its concrete counterweight, a small operator cab, a hook
+    // line, and a red light on the jib tip that blinks while the sky is still low - real and common
+    // downtown (Toronto puts up more cranes at once than any other city in North America).
+    var mx = sx + Math.round(bw * (0.20 + hash(seed * 41 + 3) * 0.55));
+    var mh = Math.max(u(9), Math.round(bw * (0.55 + hash(seed * 41 + 5) * 0.35))), my = mt - mh;
+    var jl = Math.max(u(10), Math.round(bw * (0.60 + hash(seed * 41 + 7) * 0.40))), cj = Math.round(jl * 0.32);
+    var left = hash(seed * 41 + 9) < 0.5, jx0 = left ? mx - jl : mx - cj, jx1 = left ? mx + cj : mx + jl;
+    var iron = L.pent, lt = L.slab, cw = Math.max(1, u(1.6)), ch = Math.max(1, u(1.8));
+    hline(jx0, jx1, my - 1, lt);                                          // lit top edge on the jib, so it still reads against a dark roof behind it
+    hline(jx0, jx1, my, iron);
+    vline(mx, my, mt, iron);
+    vline(mx + (sunX > mx ? 1 : -1), my, mt, lt);                         // sun-facing mast edge, same reason
+    px(mx, my + 1, lt);
+    rect(left ? jx1 - cw : jx0, my + 1, cw, ch, lt);                       // counterweight on the short back arm
+    rect(mx - Math.max(1, u(1.6)), my + 1, Math.max(2, u(2.4)), Math.max(1, u(1.4)), iron);   // operator cab
+    var hookx = left ? jx0 + Math.round(jl * 0.22) : jx1 - Math.round(jl * 0.22);
+    vline(hookx, my + 1, my + Math.max(2, u(3.2)), iron);
+    if (t < 0.4 && !(((clock * 1.5 + seed) | 0) & 1)) px(left ? jx0 : jx1, my, L.red);
   }
   function tower(L) {
     // ~2 km off it barely moves: .48W / .43W / .38W / .33W across the four stops
@@ -1001,7 +1115,8 @@ function mount(canvas, opts) {
     // jittered, thinned and mirrored per tree, two limbs into it, and sky through a notch or two at its edge
     var tpl = PT_CROWNS[(hash(i * 5 + 13) * 3) | 0], ms = tpl[2], gp = tpl[3], nl = ms.length, mir = hash(i * 5 + 15) < 0.5 ? -1 : 1;
     var sh = hash(i * 5 + 11), rx = r * (0.92 + sh * 0.20) * tpl[0], ry = r * (0.96 - sh * 0.12) * tpl[1];
-    var clear = Math.round(r * (0.36 + hash(i * 5 + 12) * 0.12)), ly0 = base - clear, tw = Math.max(u(1.1), Math.round(r * 0.11)), bark = C('#33251a');
+    var birch = i === PT_BIRCH_I;
+    var clear = Math.round(r * (0.36 + hash(i * 5 + 12) * 0.12)), ly0 = base - clear, tw = Math.max(u(1.1), Math.round(r * (birch ? 0.085 : 0.11))), bark = birch ? C('#c9c1a4') : C('#33251a');
     var cx = sx + Math.round((hash(i * 5 + 14) - 0.5) * r * 0.16), cy, k, q, a, b, R, lx, ly, bot = -1e9, tp = 1e9, wx = 1, n = 0, hx, hy, hr, dx, dy, dl, Rl;
     for (k = 0; k < nl; k++) {
       q = ms[k];
@@ -1029,16 +1144,33 @@ function mount(canvas, opts) {
       n = ptSave(n, Math.round(hx + dx * hr * 1.3 - dy * hr * 0.5), Math.round(hy + dy * hr * 1.3 + dx * hr * 0.5), Math.max(1, hr - 1));
     }
     rect(sx - (tw >> 1), ly0 - Math.round(bot * 0.6), tw, Math.round(bot * 0.6) + clear + 1, bark);
-    if (PT_S[3] && Math.abs(PT_S[0]) > 0.15) vline(PT_S[0] > 0 ? sx - (tw >> 1) + tw - 1 : sx - (tw >> 1), ly0 - u(3), base, C('#4b3827'));
-    limb(sx, ly0, cx - Math.round(wx * 0.26), cy + Math.round(bot * 0.25), Math.max(1, tw - 2), 1, bark, 0);
-    limb(sx, ly0 - u(2), cx + Math.round(wx * 0.24), cy + Math.round(bot * 0.1), Math.max(1, tw - 2), 1, bark, 0);
+    if (birch) {
+      var bby = ly0 - Math.round(bot * 0.6), bbh = Math.round(bot * 0.6) + clear + 1, nb = Math.max(2, Math.min(5, Math.round(bbh / u(6)))), lc = C('#241a10'), k2, yy2, mw2, mx2;
+      for (k2 = 0; k2 < nb; k2++) {
+        yy2 = bby + Math.round((k2 + 0.5 + (hash(i * 97 + 80 + k2) - 0.5) * 0.6) / nb * bbh);
+        mw2 = Math.max(1, Math.round(tw * (0.45 + hash(i * 97 + 90 + k2) * 0.45)));
+        mx2 = sx - (mw2 >> 1) + Math.round((hash(i * 97 + 95 + k2) - 0.5) * Math.max(0, tw - mw2));
+        hline(mx2, mx2 + mw2 - 1, yy2, lc);
+      }
+    }
+    if (PT_S[3] && Math.abs(PT_S[0]) > 0.15) vline(PT_S[0] > 0 ? sx - (tw >> 1) + tw - 1 : sx - (tw >> 1), ly0 - u(3), base, birch ? C('#f2ead2') : C('#4b3827'));
+    var limbC = birch ? C('#33251a') : bark;   // birch: only the clear lower trunk is pale - the scaffold limbs into
+                                                // the crown stay in shade-dark bark, so they read as branches, not arms
+    limb(sx, ly0, cx - Math.round(wx * 0.26), cy + Math.round(bot * 0.25), Math.max(1, tw - 2), 1, limbC, 0);
+    limb(sx, ly0 - u(2), cx + Math.round(wx * 0.24), cy + Math.round(bot * 0.1), Math.max(1, tw - 2), 1, limbC, 0);
     for (k = 0; k < nl; k++) {
       if (!PT_LB[k * 4 + 3]) continue;
       R = PT_LB[k * 4 + 2]; q = ms[k][1];
-      ptMass(cx + PT_LB[k * 4], cy + PT_LB[k * 4 + 1], R, 0.9, i * 13 + k, Math.max(1, Math.round(R * 0.13)), q < -0.3 ? 0.62 : q < 0 ? 0.36 : 0.08 + hash(i * 79 + k) * 0.1, T, q < 0.15 ? 1 : 0, 1, q < 0 ? 0 : 3);
+      var k0v = q < -0.3 ? 0.62 : q < 0 ? 0.36 : 0.08 + hash(i * 79 + k) * 0.1, litev = q < 0.15 ? 1 : 0, flv = q < 0 ? 0 : 3;
+      ptMass(cx + PT_LB[k * 4], cy + PT_LB[k * 4 + 1], R, 0.9, i * 13 + k, Math.max(1, Math.round(R * 0.13)), k0v, T, litev, 1, flv);
     }
     ptRestore(n);
-  }  function ptPal2(k) {
+  }  function ptPalA(v) {
+    // graded autumn-patch ramp (0 red-orange, 1 gold), cached per time step like ptPal/ptPal2
+    if (PT_PALA[2] !== gc) { PT_PALA[2] = gc; PT_PALA[0] = PT_AUTUMN[0].map(function (h) { return C(h); }); PT_PALA[1] = PT_AUTUMN[1].map(function (h) { return C(h); }); }
+    return PT_PALA[v];
+  }
+  function ptPal2(k) {
     // conifer (0) and poplar (1) get their own tree-line ramp instead of the shared PT_FRONT one they used
     // to be painted from, so a needle crown and a broadleaf one read apart by colour before shape is read:
     // PT_CONI rotated cooler/bluer (a spruce), PT_POPL a little warmer/yellower (early-turning poplar/cypress)
@@ -1150,6 +1282,51 @@ function mount(canvas, opts) {
     for (i = 0; i < 4; i++) pgEdge(i, HZ + Math.round(edges[i] * GH), u(0.6) + Math.round(edges[i] * u(2.6)), Math.max(1, Math.round(0.10 * (edges[i + 1] - edges[i]) * GH)));
     PG_SCR.wf = C('#e9e1cd'); PG_SCR.wf2 = C('#f2d24a');
     for (j = 0; j < PG_SCR.brn; j += 4) pgBlades(j);
+    pgLeafLitter();
+  }
+  function pgLeafLitter() {
+    // First fallen leaves of September: few and scattered, a good field clear of the tree's own leaf-fall.
+    // At this distance almost all of them are just warm irregular flecks; only the nearest (LN) is close
+    // enough to show an actual lobed silhouette with a stem.
+    var LX = [1.70, 1.82, 1.62, 2.05, 2.90, 2.75], LY = [0.35, 0.58, 0.75, 0.85, 0.45, 0.72], LK = [0, 1, 2, 1, 0, 2], LF = [1, -1, 1, -1, 1, -1], LN = [0, 0, 0, 1, 0, 0];
+    var cols = [[C('#e0a94e'), C('#a8854f')], [C('#7e3226'), C('#57422a')], [C('#a8854f'), C('#7e3226')]];
+    var i, x, y, s, k, c, c2;
+    for (i = 0; i < LX.length; i++) {
+      y = HZ + Math.round(GH * LY[i]); x = sxOf(Math.round(LX[i] * W), 1);
+      s = Math.max(2, Math.round(mpx(0.10, y)));
+      if (x < -s - 3 || x > W + s + 3) continue;
+      k = LK[i]; c = cols[k][0]; c2 = cols[k][1];
+      if (LN[i]) pgMapleLeaf(x, y, s, c, c2, LF[i]);
+      else pgLeafFleck(x, y, s, c, c2, i);
+    }
+  }
+  function pgMapleLeaf(x, y, s, c, c2, dir) {
+    // Explicit width profile (apex, lobe, notch, big lobe, notch, lobe, base) instead of a smooth
+    // curve, so the edge points and pinches like a real leaf rather than tapering into a fan.
+    var ht = Math.max(4, Math.round(s * 0.85)), hs = Math.max(2, Math.round(s * 0.5)), L = ht + hs;
+    var LP = [0, 0.12, 0.28, 0.42, 0.55, 0.72, 0.87, 1], LW = [0, 0.32, 0.26, 1.0, 0.5, 0.6, 0.22, 0];
+    var dy, ly, seg, f, w;
+    for (dy = -ht; dy <= hs; dy++) {
+      ly = (dy + ht) / L;
+      for (seg = 0; seg < LP.length - 2 && ly > LP[seg + 1]; seg++);
+      f = (ly - LP[seg]) / (LP[seg + 1] - LP[seg]);
+      w = Math.round(s * (LW[seg] + (LW[seg + 1] - LW[seg]) * f));
+      if (w > 0) hline(x - w, x + w, y + dir * dy, c);
+    }
+    px(x - 1, y + dir * Math.round(-ht + L * 0.42), c2);       // vein fleck at the widest lobe
+    px(x, y + dir * Math.round(-ht + L * 0.16), c2);
+    px(x, y + dir * (hs + 1), c2);                             // stem, continuing past the leaf itself
+    px(x, y + dir * (hs + 2), c2);
+  }
+  function pgLeafFleck(x, y, s, c, c2, seed) {
+    // Too far to resolve a leaf shape: a handful of scattered warm pixels in the grass.
+    var n = 3 + (hash(seed * 7 + 2) * 3 | 0), j, dx, dy, r;
+    for (j = 0; j < n; j++) {
+      r = hash(seed * 31 + j * 5 + 1);
+      dx = Math.round((r - 0.5) * s * 1.6);
+      dy = Math.round((hash(seed * 41 + j * 5 + 2) - 0.5) * s * 0.9);
+      px(x + dx, y + dy, hash(seed * 53 + j * 5 + 3) > 0.7 ? c2 : c);
+    }
   }
   function street() {
     // Queen St: far sidewalk, a kerb with a lit top, a shaded 15 cm face and a gutter, then asphalt. It ends in a
@@ -1349,6 +1526,7 @@ function mount(canvas, opts) {
     var y = HZ + Math.round(GH * 0.66), w = Math.round(0.09 * W), x = sxOf(2.31 * W - w, 1);
     pgWallShadow();                                            // the wall and its gate piers, as one shadow
     pgFlowerShade();                                           // contact shade under the flower bed
+    pgFountainShadow(sxOf(PG_FOUNTAIN.x * W, 1), HZ + Math.round(GH * PG_FOUNTAIN.y));
     if (x > W + u(120) || x + w < -u(160)) return;
     pgPad(sxOf(2.17 * W, 1) - Math.round(mpx(0.35, y)), y);   // the concrete pad under the bench and bin
     pgBenchShadow(x, y, w);
@@ -1672,6 +1850,17 @@ function mount(canvas, opts) {
     }
     streetSideRow(i - 1, nUp);
   }
+  function streetRowHM(hi) {
+    // storey height of the receding cross-street row, hi buildings from the corner: a smooth-noise
+    // walk (the same eased-knot shape wob() uses for outlines) instead of an independent hash per
+    // building, so a parapet reads a storey higher here and there rather than every roofline pixel
+    // being reshuffled on its own - a comb of single-pixel spikes near the horizon, not buildings.
+    // Knots ~4 buildings apart keep each change spanning a roughly constant run of the row, and the
+    // interpolated result never leaves [7, 10.5] on its own, so no separate clamp is needed.
+    var st = 4, f = hi / st, k = f | 0, a = 7 + hash(k * 53 + 31) * 3.5, b = 7 + hash((k + 1) * 53 + 31) * 3.5;
+    f -= k; f = f * f * (3 - 2 * f);
+    return a + (b - a) * f;
+  }
   function streetSideRow(ci, nUp) {
     // the corner building's side wall, then houses along the cross street receding to the horizon beside the park.
     // Their fronts face the cross street, so each depth row is a thin upright slice and the roofline sinks toward
@@ -1684,7 +1873,7 @@ function mount(canvas, opts) {
       if (x1 <= 0) continue;
       z = W * 2.5 / (g - HZ) - zb;
       if (z < 18) { hi = -1; top = g - Math.round(bh * (g - HZ) / (BASE - HZ)); c = C(STREET_TONE[STREET_FSEQ[ci % STREET_FSEQ.length]] || SFC[STREET_FSEQ[ci % STREET_FSEQ.length]]); }
-      else { hi = Math.floor((z - 18) / 6.5); hm = 7 + hash(hi * 7 + 91) * 3.5; top = g - Math.round(mpx(hm, g)); c = C(SFC[STREET_FSEQ[(hi * 5 + 3) % STREET_FSEQ.length]]); }
+      else { hi = Math.floor((z - 18) / 6.5); hm = streetRowHM(hi); top = g - Math.round(mpx(hm, g)); c = C(SFC[STREET_FSEQ[(hi * 5 + 3) % STREET_FSEQ.length]]); }
       for (x = x0; x < x1; x++) {
         vline(x, top, g - 1, c); px(x, top, dk);
         if (((x + camX) & 3) === 0) for (s = 0; s < 3; s++) if (mpx(1.1 + 3.2 * s, g) < g - top - 3) vline(x, g - Math.round(mpx(2.6 + 3.2 * s, g)), g - Math.round(mpx(1.1 + 3.2 * s, g)), win);
@@ -1755,6 +1944,22 @@ function mount(canvas, opts) {
     vline(fx, dtop, BASE - 1, dk); vline(fx + dw - 1, dtop, BASE - 1, C('#6f573c'));
     frame(fx + 2, dtop + 3, dw - 4, Math.round((BASE - dtop) * 0.4), C('#6f573c')); frame(fx + 2, dtop + Math.round((BASE - dtop) * 0.5), dw - 4, Math.round((BASE - dtop) * 0.42), C('#6f573c'));
     px(fx + dw - 3, dtop + Math.round((BASE - dtop) * 0.47), stone);
+    if (hash(i * 43 + 17) < 0.16) streetSandwichBoard(sx, bw, fx, dw, left, m);
+  }
+  function streetSandwichBoard(sx, bw, fx, dw, left, m) {
+    // an A-frame chalkboard beside a shop's doorway, on whichever side of it is clear: a slim
+    // board on splayed feet, seen mostly face-on like every other flat sign in this scene.
+    var w = Math.max(3, Math.round(0.46 * m)), h = Math.max(9, Math.round(0.95 * m)), gap = Math.max(2, Math.round(0.35 * m));
+    var x0 = left ? fx + dw + gap : fx - gap - w;
+    if (x0 < sx + 2 || x0 + w > sx + bw - 2) return;
+    var top = BASE - h, wood = C('#4b3827'), wood2 = C('#33251a'), board = C('#1d252b'), chalk = C('#cfd6d8'), cream = C('#e9e1cd');
+    px(x0 - 1, BASE - 1, wood); px(x0 + w, BASE - 1, wood);            // splayed feet, edge-on
+    rect(x0, top, w, h, board);
+    hline(x0 + 1, x0 + w - 2, top, cream);            // painted cap rail, cream trim tone - separates the board from the dark doorway behind it
+    frame(x0 + 1, top + 1, w - 2, h - 3, wood2); hline(x0 + 1, x0 + w - 2, top + 1, wood);
+    hline(x0 + 2, x0 + w - 3, top + Math.round(h * 0.32), chalk);
+    hline(x0 + 2, x0 + w - 4, top + Math.round(h * 0.32) + Math.max(2, Math.round(0.14 * m)), chalk);
+    shade(x0 - 1, BASE - 1, 0.30); shade(x0 + w, BASE - 1, 0.30);
   }
   function streetWindow(x, y, w, h, trim, head, stone, on, r) {
     // a tall 2-over-2 sash under a segmental arch, stone sill below. Lit ones glow (CR) behind a blind now and
@@ -1835,10 +2040,88 @@ function mount(canvas, opts) {
   }
 
   function lights() {
-    // four streetlights (the last on the corner), the TTC stop post, then the overhead in front of them
+    // four streetlights (the last on the corner), a hydrant, a Green P sign, a litter/recycling bin
+    // and the junction's street-name blades, the TTC stop post, then the overhead in front of them
     for (var i = 0; i < 4; i++) streetLamp(i);
+    streetHydrant();
+    streetGreenP();
+    streetLitterBin();
+    streetJunctionSign();
     streetStop();
     streetOverhead();
+  }
+  function streetHydrant() {
+    // a squat cast-iron fire hydrant at the kerb line, a couple of metres past the third streetlight
+    // on its east side (clear of both the stopped streetcar's 28 m body, which hides the first two
+    // poles for as long as it is in frame, and the delivery worker's box stack, which occupies the
+    // gap west of this pole): domed bonnet, a steamer cap and two hose nozzle caps, red body with
+    // chrome caps (a common Toronto colour), a flared cast foot at the base. The sun-side edge and
+    // cap catch the light.
+    var y = HZ + Math.round(GH * 0.17), m = mpx(1, y), wx = STREET_POLES[2] * W + mpx(2.2, y), sx = Math.round(wx - camX);
+    var w = Math.max(4, Math.round(0.34 * m)), h = Math.max(8, Math.round(0.78 * m));
+    if (sx < -w - 3 || sx > W + w + 3) return;
+    var top = y - h, x0 = sx - (w >> 1), domeH = Math.max(2, Math.round(h * 0.34)), nk = top + domeH;
+    var red = C('#b34a3a'), red2 = C('#7e3226'), red3 = C('#8f2f28'), sil = C('#9aa3a6'), silD = C('#6d777b'), dk = C('#26292d');
+    var litR = sunE > u(9) && sunX > sx;                          // which flank catches the low sun
+    rect(x0, nk, w, y - nk, red);                                 // barrel
+    disc(sx, nk, Math.max(2, Math.ceil(w * 0.58)), red);          // domed bonnet, its base flush with the barrel top
+    px(sx, top, silD);
+    var nh = Math.max(2, Math.round(h * 0.10)), ny = nk + Math.round((y - nk) * 0.18);
+    rect(x0 - 2, ny, 2, nh, sil); rect(x0 + w, ny, 2, nh, sil);    // hose nozzle caps, flush against the barrel
+    px(x0 - 2, ny, silD); px(x0 + w + 1, ny, silD);
+    px(sx - (litR ? 1 : -1), nk - 1, C('#f6f4ea'));                // steamer cap glint on the sun side
+    vline(x0, nk, y - 1, litR ? red : red2); vline(x0 + w - 1, nk, y - 1, litR ? C('#cf6250') : red3);
+    // flared cast foot: the bottom 1-2 rows step out 1px each side, so the silhouette reads as a
+    // hydrant's base flange rather than a straight bollard
+    var flr = h >= 16 ? 2 : 1, k2;
+    for (k2 = 1; k2 <= flr; k2++) { var ry2 = y - 1 - k2; px(x0 - 1, ry2, litR ? red : red2); px(x0 + w, ry2, litR ? C('#cf6250') : red3); }
+    hline(x0 - 1, x0 + w, y - 1, dk);
+    if (sunE > u(9)) shadow(x0, y, w, h, 0.26); else { shade(x0 - 1, y, 0.30); shade(x0 + w, y, 0.30); }
+  }
+  function streetGreenP() {
+    // a Green P parking sign (Toronto Parking Authority) on the third streetlight's pole, on a
+    // short bracket below the davit arm: a white-rimmed green disc with a bold P.
+    var y = HZ + Math.round(GH * 0.17), m = mpx(1, y), sx = Math.round(STREET_POLES[2] * W - camX);
+    var r = Math.max(4, Math.round(0.30 * m)), cy = y - Math.round(2.35 * m), cx = sx - r - Math.max(2, Math.round(0.10 * m));
+    if (cx + r < -2 || cx - r > W + 2) return;
+    disc(cx, cy, r, C('#f6f4ea')); disc(cx, cy, Math.max(2, r - 2), C('#1f3f2c'));   // a 1px ring reads as dashed (rounding), so the rim is 2px
+    hline(cx, sx, cy, C('#4a555e'));                              // bracket back to the pole
+    streetText('P', cx - 2, cy - 2, 1, C('#f6f4ea'));
+  }
+  function streetLitterBin() {
+    // a City-style twin-stream bin (litter, recycling) on the sidewalk toward the corner, clear of
+    // the streetcar and the third streetlight's hydrant: two square hoppers under one lid,
+    // colour-coded rather than lettered.
+    var y = HZ + Math.round(GH * 0.17), m = mpx(1, y), wx = streetPoleX(3) - mpx(4.5, y), sx = Math.round(wx - camX);
+    var w = Math.max(6, Math.round(0.62 * m)), h = Math.max(7, Math.round(0.92 * m));
+    if (sx < -w - 2 || sx > W + w + 2) return;
+    var top = y - h, x0 = sx - (w >> 1), half = w >> 1, lidH = Math.max(2, Math.round(h * 0.14));
+    var grey = C('#51565c'), grey2 = C('#33373b'), blue = C('#3d4a63'), lid = C('#26292d'), dk = C('#1d252b');
+    rect(x0, top + lidH, half, h - lidH, grey); rect(x0 + half, top + lidH, w - half, h - lidH, blue);
+    vline(x0 + half, top + lidH, y - 1, dk);
+    rect(x0 - 1, top, w + 2, lidH, lid); hline(x0 - 1, x0 + w, top, grey2);
+    hline(x0 + 2, x0 + half - 2, top + 1, C('#26292d')); hline(x0 + half + 2, x0 + w - 2, top + 1, C('#26292d'));
+    vline(x0, top + lidH, y - 1, grey2); vline(x0 + w - 1, top + lidH, y - 1, C('#1d252b'));
+    hline(x0 - 1, x0 + w, y - 1, dk);
+    if (sunE > u(9)) shadow(x0, y, w, h, 0.26); else { shade(x0 - 1, y, 0.30); shade(x0 + w, y, 0.30); }
+  }
+  function streetJunctionSign() {
+    // two stacked street-name blades on the corner pole, below its davit arm: QUEEN ST W along the
+    // through street, the cross street below it, both faced toward the camera the way every other
+    // flat sign in this scene is (a true edge-on blade would be unreadable at this angle).
+    var y = HZ + Math.round(GH * 0.17), m = mpx(1, y), sx = Math.round(streetPoleX(3) - camX);
+    if (sx < -u(60) || sx > W + u(60)) return;
+    // true scale first, stepped up only if that would fall under an 8px readability floor - the
+    // same pattern streetStop() uses for its flag, rather than an unconditional doubling
+    var gh0 = 6 * 1 + 3, sc = gh0 < 8 ? 2 : 1, gh = 6 * sc + 3, gw = 10 * 4 * sc - sc + 6, by = y - Math.round(2.85 * m);
+    var green = C('#1f3f2c'), white = C('#f6f4ea'), post = C('#4a555e');
+    hline(sx - 1, sx + 1, by - 1, post);
+    streetSignBlade(sx - (gw >> 1), by, gw, gh, 'QUEEN ST W', sc, green, white);
+    streetSignBlade(sx - (gw >> 1), by + gh + 2, gw, gh, 'ELM ST', sc, green, white);
+  }
+  function streetSignBlade(x, y, w, h, s, sc, bg, fg) {
+    rect(x, y, w, h, bg); frame(x, y, w, h, C('#152e24'));
+    streetText(s, x + ((w - (s.length * 4 * sc - sc)) >> 1), y + ((h - 5 * sc) >> 1), sc, fg);
   }
   function streetPoleX(i) {
     // world x of streetlight i; the fourth stands on the far corner of the cross street
@@ -1963,8 +2246,10 @@ function mount(canvas, opts) {
     // TTC Flexity Outlook stopped by the stop post, true scale: 28 m by 3.84 m, five sections on three bogies.
     // Traffic keeps right, so a car on the far track heads left: raked cab on the left, and its doors (right side
     // only) open to the far kerb, away from us. Interior lights stay on all day; head and tail lights use CR.
-    if (progress > 0.24) return;
-    var m = mpx(1, KERB + Math.round(0.09 * RH)), L = Math.round(28 * m), xr = sxOf(0.70 * W, 1), xf = xr - L;
+    // Position is tramSchedule(clock) alone - camX only decides whether that world point is on screen.
+    var S = tramSchedule(clock), m = S.m1, L = Math.round(28 * m);
+    if (S.off > 0 && camX > S.gateCam) return;          // still rolling in from past the seam - this far out its restart jump would be the first thing on screen
+    var xr = sxOf(0.70 * W + S.off, 1), xf = xr - L;
     if (xf > W + u(40) || xr < -u(40)) return;
     var yb = KERB + Math.round(STREET_TR[1] * RH), x, y, k, j, h, a, b, r, c, n, x0, x1, pw, slv, xc;
     var red = C('#d9584f'), red2 = C('#b34a3a'), red3 = C('#7e3226'), blk = C('#26292d'), blk2 = C('#1d252b');
@@ -2002,6 +2287,10 @@ function mount(canvas, opts) {
       h = (yb - y) / m; a = xf + Math.round((h - 1.05) / 1.8 * 0.62 * m) + 3;
       for (x = a; x < xcab - 3; x++) if (BAY[((y - yb) & 3) * 4 + ((x - xf) & 3)] < 4 - (y - ycab) * 0.1 - (x - a) * 0.04) px(x, y, C('#3d4a63'));
     }
+    var opY = ycab + Math.round(0.62 * m), opA = xf + Math.round((( (yb - opY) / m - 1.05) / 1.8 * 0.62) * m) + 3;   // operator, head and shoulders, dark against the glazing
+    var opX = Math.min(xcab - Math.round(0.55 * m), opA + Math.round(0.55 * m)), opR = Math.max(2, Math.round(0.16 * m)), opDk = C('#181b1e');
+    disc(opX, opY, opR, opDk);
+    rect(opX - Math.round(opR * 1.3), opY + opR - 1, Math.round(opR * 2.6), Math.round(opR * 1.1), opDk);
     var bw = Math.max(3, Math.round(0.34 * m));
     for (k = 1; k < 5; k++) {                                                               // bellows
       c = xf + Math.round(SEC[k] * L) - (bw >> 1);
@@ -2060,6 +2349,62 @@ function mount(canvas, opts) {
       vline(hx, sb - Math.round(0.12 * mm) - hh + 3, sb - Math.round(0.12 * mm) - 2, CR('#a27850'));
     }
     if (sign && w > 38) { rect(x, y, w, 9, CR('#1d252b')); streetText('501 QUEEN', x + ((w - 35) >> 1), y + 2, 1, CR('#f4ac6b')); }
+  }
+  function tramSchedule(clock) {
+    // the one timeline: brakes in over TRAM_RUN m, dwells with the doors, eases away over TRAM_RUN m, then
+    // gone. off is the world-px offset of the stopped position (0 = parked); every far-lane unit reads this.
+    var cy = KERB + Math.round(0.09 * RH), m1 = mpx(1, cy), run = TRAM_RUN * m1, carL = Math.round(28 * m1);
+    var ph = ((clock + TRAM_PH0) % TRAM_CYC + TRAM_CYC) % TRAM_CYC, off, door = 0, f, loc;
+    if (ph < TRAM_TA) { f = 1 - ph / TRAM_TA; off = run * f * f; }
+    else if (ph < TRAM_TA + TRAM_TD) {
+      loc = ph - TRAM_TA; off = 0;
+      door = loc < TRAM_DOOR ? loc / TRAM_DOOR : loc > TRAM_TD - TRAM_DOOR ? Math.max(0, (TRAM_TD - loc) / TRAM_DOOR) : 1;
+    } else if (ph < TRAM_TA + TRAM_TD + TRAM_TD2) { f = (ph - TRAM_TA - TRAM_TD) / TRAM_TD2; off = -run * f * f; }
+    else off = -run;
+    // camX past which the wrap's restart point (off=run, arriving) would land any part on screen: beyond it
+    // the arrival would show that jump, so the schedule-driven part of the queue (not the parked van) just
+    // sits out the rest of the scroll instead. Geometry, not seam(): 0.70*W+off is the car's REAR (tail);
+    // its front - the leading edge, first to cross onto screen - is carL further back, so that's what has
+    // to clear the right edge by W+40, or a chunk of cab pops in already on screen at the wrap instant.
+    return { ph: ph, off: off, door: door, cy: cy, m1: m1, run: run, sinceClose: ph - (TRAM_TA + TRAM_TD), gateCam: 0.70 * W + run - carL - (W + 40) };
+  }
+  function tramSedanOff(S) {
+    // rigid behind the tram while it brakes and dwells (Ontario law: wait behind the open rear doors);
+    // a reaction pause once they've shut, then its own, quicker accelerate-away
+    if (S.sinceClose < 0) return S.off;
+    var sc = S.sinceClose - TRAM_SEDAN_WAIT, run = TRAM_SEDAN_RUN * S.m1, v0 = TRAM_SEDAN_V0 * S.m1, f;
+    if (sc < 0) return 0;
+    if (sc < TRAM_SEDAN_RT) { f = sc / TRAM_SEDAN_RT; return -run * f * f; }
+    return -run - v0 * (sc - TRAM_SEDAN_RT);
+  }
+  function tramSedanBrake(S) { return S.sinceClose < TRAM_SEDAN_WAIT; }
+  function tramCyclistOff(S) {
+    // same rigid queue, then waits for the sedan to clear before riding off at its own, slower pace
+    if (S.sinceClose < 0) return S.off;
+    var sc = S.sinceClose - TRAM_CYCL_WAIT, run = TRAM_CYCL_RUN * S.m1, v0 = TRAM_CYCL_V0 * S.m1, f;
+    if (sc < 0) return 0;
+    if (sc < TRAM_CYCL_RT) { f = sc / TRAM_CYCL_RT; return -run * f * f; }
+    return -run - v0 * (sc - TRAM_CYCL_RT);
+  }
+  function tramXCarOff(S) {
+    // one more through car, queued past the cyclist: "otherwise far-lane cars drive left at city
+    // speed and keep a real following gap" - it waits its turn in the same queue, then goes
+    if (S.sinceClose < 0) return S.off;
+    var sc = S.sinceClose - TRAM_XCAR_WAIT, run = TRAM_XCAR_RUN * S.m1, v0 = TRAM_XCAR_V0 * S.m1, f;
+    if (sc < 0) return 0;
+    if (sc < TRAM_XCAR_RT) { f = sc / TRAM_XCAR_RT; return -run * f * f; }
+    return -run - v0 * (sc - TRAM_XCAR_RT);
+  }
+  function tramWheel(cx, cy, r, tire, rim, hub) {
+    // a tyre ring with a thin rim, not a solid disc - the road shows through the middle at this size
+    var y, h, th = Math.max(1, Math.round(r * 0.3)), h2;
+    for (y = -r; y <= r; y++) {
+      h = Math.round(Math.sqrt(Math.max(0, r * r - y * y)));
+      if (h <= th) { hline(cx - h, cx + h, cy + y, tire); continue; }
+      hline(cx - h, cx - h + th - 1, cy + y, tire); hline(cx + h - th + 1, cx + h, cy + y, tire);
+      h2 = h - th; if (h2 > 0) { px(cx - h2, cy + y, rim); px(cx + h2, cy + y, rim); }
+    }
+    px(cx, cy, hub);
   }
 
   function pgGatePier(k) {
@@ -2459,6 +2804,16 @@ function mount(canvas, opts) {
       if (fl & 4 && xw < elw[y1 + 1] - 1) buf[(y1 + 1) * W + x] = e;
     }
   }
+  function pgBenchCup(cx, topY) {
+    // A plain kraft takeout cup, lid on, set down on the bench's free armrest - no logo, just a cup
+    // someone left behind. Sits right on the armrest's own top surface row.
+    var h = Math.max(4, Math.round(mpx(0.12, topY))), w = Math.max(3, Math.round(mpx(0.075, topY)));
+    var cup = C('#d9b48c'), cup2 = C('#b98761'), lid = C('#e9e1cd'), dk = C('#51565c'), x0 = cx - (w >> 1), ly = topY - h;
+    rect(x0, ly + 1, w, h - 1, cup);
+    vline(x0, ly + 1, topY - 1, cup2); vline(x0 + w - 1, ly + 1, topY - 1, cup2);
+    hline(x0 - 1, x0 + w, ly, lid);
+    px(x0 + (w >> 1), ly, dk);
+  }
   function bench() {
     // A slatted park bench on black cast-iron end frames, 1.8 m x 0.85 m, drawn in true perspective:
     // the back plane sits 0.5 m behind the front legs, so it is a touch smaller and nearer the centre.
@@ -2481,6 +2836,15 @@ function mount(canvas, opts) {
       rect(xa, ya, xz - xa + 1, yz - ya, shd);
       hline(xa, xz, ya, lit); hline(xa, xz, yz - 1, deep);
     }
+    var pgPy = zb(0.85), pgPy2 = zb(0.765), pgPc = pgPy + ((pgPy2 - pgPy) >> 1);   // a small brass memorial
+    var pgRows = pgPy2 - pgPy > 2 ? 3 : 2, pgPw = pgRows === 3 ? 4 : 3;   // plate: near-square against its own row count, not the slat's length
+    var pgPx = Math.round((xa + xz) / 2);
+    var pgBrs = C('#a8854f'), pgBrL = C('#dcb26c'), pgBrD = deep;
+    hline(pgPx - pgPw + 1, pgPx + pgPw - 1, pgPc - 1, pgBrL);
+    hline(pgPx - pgPw + 1, pgPx + pgPw - 1, pgPc, pgBrs);
+    if (pgRows === 3) hline(pgPx - pgPw + 1, pgPx + pgPw - 1, pgPc + 1, pgBrD);
+    vline(pgPx - pgPw, pgPc - 1, pgPc + (pgRows === 3 ? 1 : 0), pgBrD);   // dark side frame bounds it as an object, not a streak
+    vline(pgPx + pgPw, pgPc - 1, pgPc + (pgRows === 3 ? 1 : 0), pgBrD);
     var sB = zb(0.46), sF = zf(0.46), g1, g2;
     g1 = Math.round((sF - sB) * 0.36); g2 = Math.round((sF - sB) * 0.70);
     for (r = sB; r <= sF; r++) {                               // seat top: back edge to front edge
@@ -2497,6 +2861,7 @@ function mount(canvas, opts) {
       if (sg > 0.2 || sg < -0.2) vline(sg > 0 ? e + lw - 1 : e, sF + bt + 1, y - 1, glint);
       hline(e - 2, e + lw + 1, y, iron);                       // foot
     }
+    pgBenchCup(x + Math.round(w * 0.80), sF + 1);               // a cup set down on the seat, right of centre, clear of the sitter
     rect(x - 1, sF + 1, w + 2, bt, wood);                      // seat front board, over the frames
     hline(x - 1, x + w, sF + 1, lit); hline(x - 1, x + w, sF + bt, ink);
   }
@@ -2546,7 +2911,49 @@ function mount(canvas, opts) {
     laptop(sxOf(3.555 * W, 1), y);
     cap(sxOf(3.600 * W, 1), y + 2);
     notebook(sxOf(3.634 * W, 1), y + 1);
-  }  function treeLit(x0, y0, x1, y1, dark, paint) {
+  }  function pgFountainShadow(x, by) {
+    var m = (by - HZ) / 2.5, bowlR = Math.max(3, Math.round(m * 0.19)), h = Math.max(6, Math.round(m * 0.84));
+    if (x - bowlR > W + u(160) || x + bowlR < -u(160)) return;
+    shadow(x - bowlR, by, bowlR * 2, h, 0.28);
+  }
+  function pgFountain(x, by) {
+    // A Toronto Parks pedestal drinking fountain: a green cast-iron post to a shallow basin we look
+    // down into (the eye is above it), with a steel button at the basin floor. Always dry - no water drawn.
+    var m = (by - HZ) / 2.5;
+    var postR = Math.max(1, Math.round(m * 0.052)), postH = Math.max(6, Math.round(m * 0.70));
+    var bowlR = Math.max(4, Math.round(m * 0.20)), ry = Math.max(2, Math.round(bowlR * 0.38));
+    var lipR = Math.max(2, Math.round(bowlR * 0.62)), lipRy = Math.max(1, Math.round(ry * 0.58));
+    if (x - bowlR - 1 > W + u(30) || x + bowlR + 1 < -u(30)) return;
+    // rim tones step up from the post's own body colour so the bowl reads lighter than the post at
+    // 1:1 across most of its width, not just at one sun-caught pixel; steel reuses the street/wall
+    // grey, well apart from every green in play, so the button reads as metal rather than a dark fleck
+    var dark = C('#152e24'), body = C('#1f3f2c'), lit = C('#2a5138'), rim = C('#376b45'), sky = C('#4d8a62'), steel = C('#9aa3a6'), steelLt = C('#b3b8b2');
+    var s = Math.max(-1, Math.min(1, (sunX - x) / (0.30 * W))), cyt = by - postH - ry, dx, n, q, y0, y1, c, bw;
+    hline(x - postR - 1, x + postR, by - 1, dark);                        // small flanged foot
+    rect(x - postR, by - postH, postR * 2, postH, body);
+    vline(x - postR, by - postH, by - 1, s < -0.15 ? lit : dark);
+    vline(x + postR - 1, by - postH, by - 1, s > 0.15 ? lit : dark);
+    for (dx = -bowlR; dx <= bowlR; dx++) {                                // the rim lip: lit or rim-bright across most of it, only a narrow true-shadow sliver as dark as the post
+      n = dx / bowlR; q = Math.sqrt(Math.max(0, 1 - n * n));
+      y0 = cyt - Math.round(ry * q); y1 = cyt + Math.round(ry * q);
+      c = n * s > 0.15 ? rim : n * s < -0.15 ? body : lit;
+      vline(x + dx, y0, y1, c);
+    }
+    for (dx = -Math.round(bowlR * 0.35); dx <= Math.round(bowlR * 0.35); dx++) {   // a sky-catch band along the far rim, not one pixel
+      n = dx / bowlR; q = Math.sqrt(Math.max(0, 1 - n * n));
+      px(x + dx, cyt - Math.round(ry * q), sky);
+    }
+    for (dx = -lipR; dx <= lipR; dx++) {                                  // the basin floor, in its own shade
+      n = dx / lipR; q = Math.sqrt(Math.max(0, 1 - n * n));
+      y0 = cyt - Math.round(lipRy * q) + 1; y1 = cyt + Math.round(lipRy * q);
+      if (y1 >= y0) vline(x + dx, y0, y1, dark);
+    }
+    bw = Math.max(2, Math.round(lipR * 0.5));                             // steel button: bigger and brighter, a clear light mark on the dark floor
+    hline(x - bw, x + bw, cyt, steel);
+    hline(x - bw + 1, x + bw - 1, cyt + 1, steel);
+    px(x, cyt, steelLt);
+  }
+  function treeLit(x0, y0, x1, y1, dark, paint) {
     // draw a prop, then, when it sits in the crown's shade, shade exactly the pixels it painted
     if (!dark) { paint(); return; }
     var w = x1 - x0 + 1, P = TREE_M.pp, x, y, i = 0, ok;
@@ -2560,6 +2967,7 @@ function mount(canvas, opts) {
   }
   function parkProps() {
     binProp(sxOf(2.17 * W, 1), HZ + Math.round(GH * 0.66));   // on the bench pad, 0.4 m off its left end
+    pgFountain(sxOf(PG_FOUNTAIN.x * W, 1), HZ + Math.round(GH * PG_FOUNTAIN.y));
   }
   // A solid light line across the top of a dark box reads as a stripe on a box. The lid catches
   // the sky in a dither instead, and the clamshell seam is what says "laptop".
@@ -2747,6 +3155,103 @@ function mount(canvas, opts) {
       if (roff > 0 && j >= gx0 && j <= gx1) { bcol = buf[by * W + j]; for (q = 1; q <= roff; q++) px(j, by + q, bcol); }
       shade(j, by + roff + 1, 0.3); shade(j, by + roff + 2, 0.3);
     }
+    // hw/mc at fraction f2 up from by to fy, mirroring the main loop above (f2 kept under 0.86, so the
+    // near-fork widening term never applies): shared by the knot, scar and moss below, so all three hold
+    // their place on the trunk as it pans rather than drifting with the screen.
+    function treeBarkAt(f2) { return { hw: w * (0.5 - 0.14 * f2), y: Math.round(by - f2 * (by - fy)) }; }
+    // tree-1: a knot, a whorled callus over a shed lower limb - concentric rings round a dark pith, lit
+    // on its upper-right swell like any other rounded surface facing the sun. Sits in the mid-tone band
+    // so the rings read against the bark, not fighting the dark/lit edges either side.
+    (function () {
+      var g2 = treeBarkAt(0.40), kr = Math.max(3, u(2.5)), kh = Math.max(4, Math.round(kr * 1.55)), seedK = 4405;
+      var kx = Math.round(tc - 0.12 * g2.hw), ky = g2.y, e, h, xx, nx, ny, rr, rn, lit, c, bIdx;
+      for (e = -kh; e <= kh; e++) {
+        ny = e / kh; h = kr * Math.sqrt(Math.max(0, 1 - ny * ny)) * wob(seedK, e, kh);
+        for (xx = -Math.round(h); xx <= Math.round(h); xx++) {
+          nx = xx / kr; rr = Math.sqrt(nx * nx + ny * ny);
+          rn = rr + (hash(seedK * 3 + xx * 17 + e * 13) - 0.5) * 0.16;    // noised ring edges, not perfect circles
+          if (rn >= 0.60 && hash(seedK * 5 + xx * 11 + e * 9) < 0.16) continue;   // a few bark furrows read through
+          lit = nx * 0.7 - ny * 0.9; bIdx = ((e + kh) & 3) * 4 + ((xx + kr) & 3);
+          if (rn < 0.30) c = bark;
+          else if (rn < 0.60) c = dk;
+          else if (lit > 0.15) c = (lit > 0.5 || BAY[bIdx] < Math.round(16 * (lit - 0.15) / 0.35)) ? lt : ridge;
+          else if (lit < -0.15) c = (lit < -0.5 || BAY[bIdx] < Math.round(16 * (-lit - 0.15) / 0.35)) ? crL : ridge;
+          else c = ridge;
+          px(kx + xx, ky + e, c);
+        }
+      }
+    })();
+    // tree-2: a healed pruning scar higher up, where an old lower limb was taken off for clearance long
+    // ago - a vertical eye of raised callus (a lit rim) round a rougher, darker healed core with the
+    // cut's pith still a shade darker at centre.
+    (function () {
+      var g2 = treeBarkAt(0.70), sw = Math.max(2, u(1.9)), sh = Math.max(5, Math.round(sw * 1.6)), seedS = 4505;
+      // set well off the knot's vertical axis (0.55*hw right, vs the knot's -0.12*hw) so the two
+      // don't pair up as eyes; a rounder cap over a tapered base, not a mirrored ellipse (tree-1/tree-2 review)
+      var sx = Math.round(tc + 0.55 * g2.hw), sy = g2.y, e, h, xx, nx, ny, rr, lit, c, pw;
+      for (e = -sh; e <= sh; e++) {
+        ny = e / sh; pw = ny < 0 ? 0.50 : 0.75;
+        h = sw * Math.pow(Math.max(0, 1 - ny * ny), pw) * wob(seedS, e, sh);
+        if (h < 0.4) continue;
+        for (xx = -Math.round(h); xx <= Math.round(h); xx++) {
+          nx = xx / sw; rr = Math.sqrt(nx * nx + ny * ny); lit = nx * 0.7 - ny * 0.8;
+          c = rr > 0.80 ? (lit > 0.4 ? lt : lit < -0.3 ? crL : ridge) : (hash(4510 + xx * 13 + e * 9) < 0.22 ? bark : dk);
+          px(sx + xx, sy + e, c);
+        }
+      }
+    })();
+    // tree-3: two surface roots break through the turf at the flare and dive back under a little
+    // further out - real for a mature maple in mowed parkland. Reach and rise are tied to gx0/gx1 (the
+    // flare's own edges) and to dx from the trunk (via treeRootDip, the same turf line the flare itself
+    // uses), so they hold their place as the tree pans.
+    function treeRoot(xEdge, dir, len, hgt, seedR) {
+      // a rounded ridge, not a filled mound: a lit crown along the top, a dithered shaded flank, and
+      // an occasional dark fleck (bark stipple) the way treeLimb shades a branch's cross-section
+      var i2, f2, h2, xr, yb2, yy, jj, topB, botB, cc, bIdx;
+      for (i2 = 1; i2 <= len; i2++) {
+        f2 = i2 / len; h2 = hgt * Math.sin(Math.PI * Math.pow(f2, 0.72)) * (1 - 0.2 * f2);
+        if (h2 < 0.6) { if (i2 > len * 0.4) break; else continue; }
+        h2 = Math.round(h2); xr = xEdge + dir * i2;
+        yb2 = by + Math.min(3, Math.round(treeRootDip(xr - tc, rspan) * 4));
+        topB = Math.max(1, Math.round(h2 * 0.30)); botB = Math.max(1, Math.round(h2 * 0.24));
+        for (yy = 0; yy < h2; yy++) {
+          jj = yy; bIdx = (yy & 3) * 4 + (i2 & 3);
+          if (jj < topB) cc = (jj === 0 || BAY[bIdx] < 10) ? lt : fill;
+          else if (jj >= h2 - botB) cc = (jj === h2 - 1 || BAY[bIdx] < 9) ? dk : fill;
+          else cc = hash(seedR + i2 * 13 + jj * 7) < 0.10 ? dk : fill;
+          px(xr, yb2 - h2 + yy, cc);
+        }
+        px(xr, yb2, dk);
+        shade(xr, yb2 + 1, 0.22);
+      }
+    }
+    treeRoot(gx0, -1, Math.round(u(3) + hash(4201) * u(2)), Math.max(2, u(3.4)), 4610);
+    treeRoot(gx1, 1, Math.round(u(2.6) + hash(4202) * u(1.8)), Math.max(2, u(3.0)), 4620);
+    // tree-4: moss on the trunk's shaded flank near the base - real for a mature tree in a park, the
+    // side away from the sun stays damp. Thin streaks in the bark's own furrow lines, not a blob: low
+    // contrast, keyed to the trunk (treeBarkAt) so they hold their place as it pans, longest and most
+    // crowded low down, thinning out within the bottom third.
+    (function () {
+      var mossD = C('#324a3c'), mossL = C('#4d6650'), ns = 10, i2, seedM, xf, len, y0m, y1m, yy, f2, g2, xj, mw, b, e, cc;
+      for (i2 = 0; i2 < ns; i2++) {
+        seedM = 4400 + i2 * 17;
+        xf = 0.42 + hash(4310 + i2) * 0.38;                        // in from the trunk edge, on the dark flank
+        len = Math.round(u(6) + hash(4320 + i2) * u(9));
+        y0m = by - Math.round(hash(4330 + i2) * u(2));
+        y1m = Math.max(fy + u(2), y0m - len);
+        mw = 1 + (hash(4340 + i2) < 0.45 ? 1 : 0);
+        for (yy = y0m; yy >= y1m; yy--) {
+          f2 = Math.min(0.85, (by - yy) / (by - fy)); g2 = treeBarkAt(f2);
+          xj = Math.round(tc - g2.hw * xf + Math.sin(yy * 0.4 + seedM) * u(0.6));
+          e = (y0m - yy) / Math.max(1, y0m - y1m);                 // fades out toward this streak's own top
+          for (b = 0; b < mw; b++) {
+            if (hash(seedM * 3 + yy * 13 + b * 5) > 0.85 * (1 - e * 0.55)) continue;
+            cc = hash(seedM * 5 + yy * 11 + b) < 0.35 ? mossL : mossD;
+            px(xj + b, yy, cc);
+          }
+        }
+      }
+    })();
   }  function treeLimb(x0, y0, x1, y1, w0, w1, c, lo, hi, mk) {
     // A limb laid as spans across its run: horizontal spans for a steep limb, vertical for a shallow one, so
     // its thickness holds at any angle. Shaded like the trunk and keyed to the limb itself: the side away from
@@ -3063,28 +3568,35 @@ function mount(canvas, opts) {
   function lifePoleX(cy) {
     return 0.70 * W - mpx(29.5, cy);        // 1.5 m ahead of the cab nose, same as the street package's POLE
   }
-  function lifeRider2(cy, y) {
-    // waits half a metre out from the stop pole, ahead of the cab where the body does not hide
-    // it, checking a phone; faces left, away from the cab, so the far half keeps its left-only rule
-    var h = mpx(1.7, y), sx = sxOf(lifePoleX(cy) + mpx(0.5, cy), 1);
+  function lifeRider2(cy, y, S) {
+    // Steps off soon after the doors open, a half metre out from the pole where the body doesn't
+    // hide them, checks a phone a moment, then walks off - not a fixture, so gone by the time the
+    // doors shut. Tied to S.ph, not a free-running loop, since there's nothing to hide behind once
+    // it isn't dwelling.
+    var loc = S.ph - TRAM_TA, alight = TRAM_DOOR + 0.3, pause = 6;
+    if (loc < alight || loc > 40) return;
+    var h = mpx(1.7, y), v = mpx(1.3, y), walked = Math.max(0, loc - alight - pause);
+    var sx = sxOf(lifePoleX(cy) + mpx(0.5, cy) - walked * v, 1);
     if (sx < -40 || sx > W + 40) return;
     lifeContact(sx, y, h * 0.14);
-    lifeSide(sx, y, h, -1, -1, LIFE_FOLK[1], 0, 2);
+    lifeSide(sx, y, h, -1, walked > 0 ? (walked * v / (0.764 * h)) % 1 : -1, LIFE_FOLK[1], 0, 2);
   }
-  function lifeCommuter2(F, cy, y) {
-    // Walks the far sidewalk toward the stop: moving and facing left only, as the far half
-    // requires. The loop restarts hidden inside the van's silhouette and ends hidden inside the
-    // streetcar's, so the restart and the wrap are never seen. It is not drawn while crossing the
-    // queued sedan: the sedan (1.45 m) is shorter than a standing adult on this row, so there is no
-    // silhouette tall enough to hide it there, and a floating head over the roofline looks broken -
-    // skipping that stretch reads as briefly out of sight behind the car instead.
-    var h = mpx(1.7, y), v = mpx(1.3, y), x0 = F.vx + mpx(2, cy), x1 = F.tail - mpx(6, cy), D = x0 - x1;
-    var T = D / v, d = clock % T, x = x0 - d * v;
+  function lifeCommuter2(F, cy, y, S) {
+    // Walks the far sidewalk toward the stop, timed to reach the doors while they're open and
+    // board - moving and facing left only, as the far half requires. Boarding hides them in the
+    // streetcar's silhouette because tramSchedule keeps the walk and the dwell in step, not
+    // because the car happens to always be parked there (that broke once it started moving).
+    // Still not drawn crossing the queued sedan: shorter than a standing adult on this row, so
+    // there's no silhouette tall enough to hide it, and it reads as briefly out of sight instead.
+    var h = mpx(1.7, y), v = mpx(1.3, y), x0 = F.vx + mpx(2, cy), x1 = F.tail - mpx(6, cy), Tw = (x0 - x1) / v;
+    var boardPh = TRAM_TA + TRAM_TD - 4, toBoard = ((boardPh - S.ph) % TRAM_CYC + TRAM_CYC) % TRAM_CYC;
+    if (toBoard > Tw) return;
+    var x = x1 + toBoard * v;
     if (x <= F.se && x >= F.sx) return;
     var sx = sxOf(x, 1);
     if (sx < -40 || sx > W + 40) return;
     lifeContact(sx, y, h * 0.14);
-    lifeSide(sx, y, h, -1, (d * v / (0.764 * h)) % 1, LIFE_FOLK[0], 0, 0);
+    lifeSide(sx, y, h, -1, (toBoard * v / (0.764 * h)) % 1, LIFE_FOLK[0], 0, 0);
   }
   function lifeWorker2(vanX, y) {
     // Unloading the van: a box at a time from its rear doors, at the van's east end, to a stack
@@ -3105,37 +3617,213 @@ function mount(canvas, opts) {
   }
   function sidewalkLife() {
     // Dawn downtown is nearly empty: one rider off the back of the streetcar, one walking up the
-    // sidewalk, one delivery worker. Everyone is on the far sidewalk, so they come out 48-62 px tall,
-    // and the street is still in the storefronts' shade: contact shade only, no rim light. All three
-    // move or face left only, as the far half requires.
+    // sidewalk, one delivery worker, a few pigeons working the empty pavement outside a shop front.
+    // Everyone is on the far sidewalk, so they come out 48-62 px tall, and the street is still in
+    // the storefronts' shade: contact shade only, no rim light. All three move or face left only,
+    // as the far half requires.
     if (camX > 1.1 * W) return;
-    var BY = KERB - BASE, cy = KERB + Math.round(0.09 * RH), F = lifeFarX(cy);
-    lifeCommuter2(F, cy, BASE + Math.round(0.55 * BY));
-    lifeRider2(cy, KERB - Math.round(0.14 * BY));
+    var BY = KERB - BASE, cy = KERB + Math.round(0.09 * RH), F = lifeFarX(cy), S = tramSchedule(clock);
+    lifeCommuter2(F, cy, BASE + Math.round(0.55 * BY), S);
+    lifeRider2(cy, KERB - Math.round(0.14 * BY), S);
     lifeWorker2(F.ve, KERB - Math.round(0.10 * BY));
+    lifePigeons(KERB - Math.round(0.05 * BY));
   }
   function parkLife() {
     // Mid-morning park: someone reading on the bench, a dog walker stopped while the dog sniffs, two
-    // people sitting far out on the lawn, a walker and a runner coming out from behind the big tree.
-    // Sizes come from the row each one stands on, and farther rows draw first. There is no camera
-    // gate: every figure culls itself by screen x, so nobody can switch on while in view.
+    // people sitting far out on the lawn, a walker and a runner coming out from behind the big tree,
+    // a pair of geese grazing the open lawn, and a black squirrel foraging by the tree. Sizes come
+    // from the row each one stands on, and farther rows draw first. There is no camera gate: every
+    // figure culls itself by screen x, so nobody can switch on while in view.
     lifePair(HZ + Math.round(0.11 * GH));
     lifeRunner(HZ + Math.round(0.15 * GH));
     lifeDogWalk(HZ + Math.round(0.18 * GH));
     lifeTreeWalker(HZ + Math.round(0.24 * GH));
+    lifeGeese(HZ + Math.round(0.35 * GH));
+    lifeSquirrel(HZ + Math.round(0.60 * GH));
     lifeSitter(HZ + Math.round(0.66 * GH));
   }
   function farTraffic() {
-    // The lane the streetcar stops in: a sedan waiting right behind it with its doors open
-    // (lights on at dawn, brake lights lit), and a delivery van further along at the kerb, clear
-    // of the sedan. Traffic keeps right: both face left, same as the car, and nothing drives
-    // through - this half of the road runs one way, and it waits for the streetcar.
+    // The lane the streetcar stops in: a sedan rigid behind it while the rear doors are open
+    // (Ontario law), then off in its own time; a delivery van parked clear of the sedan; a Bike
+    // Share rider queued past the worker's boxes who waits its own turn and rides off; one more
+    // through car queued behind that, for "otherwise far-lane cars drive left... and queue". All
+    // of it reads the one tramSchedule so nothing can disagree about where the tram itself is.
     if (camX > 1.2 * W) return;
     var cy = KERB + Math.round(0.09 * RH), F = lifeFarX(cy);
-    lifeCar(sxOf(F.sx, 1), cy, -1, LIFE_CAR.sedan, ['#33373b', '#4a555e', '#6d777b'], t < 0.35, 1);
-    lifeCar(sxOf(F.vx, 1), F.vcy, -1, LIFE_CAR.van, ['#4a555e', '#6d777b', '#9aa3a6'], 0, 0);
+    lifeCar(sxOf(F.vx, 1), F.vcy, -1, LIFE_CAR.van, ['#4a555e', '#6d777b', '#9aa3a6'], 0, 0);   // parked, no schedule to respect
+    var S = tramSchedule(clock);
+    if (S.off > 0 && camX > S.gateCam) return;          // same rolling-in guard as the streetcar itself
+    lifeCar(sxOf(F.sx + tramSedanOff(S), 1), cy, -1, LIFE_CAR.sedan, ['#33373b', '#4a555e', '#6d777b'], t < 0.35, tramSedanBrake(S));
+    lifeCyclist(sxOf(F.ve + mpx(7, cy) + tramCyclistOff(S), 1), cy);
+    lifeCar(sxOf(F.ve + mpx(7 + TRAM_XCAR_BACK, cy) + tramXCarOff(S), 1), cy, -1, LIFE_CAR.sedan, ['#4b3827', '#6f573c', '#8a6a3f'], t < 0.35, S.sinceClose < 0 || S.sinceClose < TRAM_XCAR_WAIT);
   }
-  function nearTraffic() {}  function lifeTreeWalker(y) {
+  function carsWave(clock, k) {
+    // A shared, gentle stop-and-go pulse: every near-lane vehicle rides the same speed curve (7
+    // m/s cruise, dipping to 2.8 m/s every 16s), so the whole lane brakes and releases together -
+    // a distant-congestion wave, not a signal at this T. dist is the flow's cumulative distance,
+    // in world px at k px/m (mpx(1,cy)) - the row's own scale, since world x is px at parallax 1.
+    var Vc = 7 * k, A = 0.6, w = 6.283185307 / 16, s = Math.sin(w * clock);
+    return { dist: Vc * (1 - 0.5 * A) * clock + Vc * 0.5 * A / w * s, brake: s > 0.03 };
+  }
+  function nearTraffic() {
+    // Cars on a loop road longer than the visible street: 3 fixed slots ride the same carsWave,
+    // evenly spaced so they can never overlap; the gap between them narrows continuously with t for
+    // "busier", never adding a slot or jumping. The loop wraps off-world on the left (always behind
+    // camX, so the wrap is never on screen); on the right each car simply isn't drawn once its front
+    // would cross the road's real edge - streetX's own edge (m=0), not the seam it leans back from -
+    // so it disappears at the paving, not past it, and reads as having turned off, not popped.
+    var cy = KERB + Math.round(0.40 * RH), TX = seam(cy) - mpx(STREET_PW, cy);
+    if (camX > TX) return;
+    var SPAWN = -0.6 * W, LOOP = 3 * W, N = 3, step = LOOP / (3 + 2 * cl01(t / 0.4));
+    var wv = carsWave(clock, mpx(1, cy)), lit = t < 0.35, i, x, sx, kd, len;
+    for (i = 0; i < N; i++) {
+      x = SPAWN + (((i * step + wv.dist) % LOOP) + LOOP) % LOOP;
+      kd = CARS_KIND[Math.floor(hash(i * 131 + 17) * CARS_KIND.length) % CARS_KIND.length];
+      len = mpx(LIFE_CAR[kd[0]].L, cy);
+      if (x + len > TX) continue;
+      sx = sxOf(x, 1);
+      if (sx < -40 || sx > W + 40) continue;
+      lifeCar(sx, cy, 1, LIFE_CAR[kd[0]], kd[1], lit, wv.brake);
+    }
+  }
+  function lifeSquirrel(y) {
+    // Toronto's black squirrel, foraging a few metres clear of the trunk. The silhouette has to
+    // carry it at this size: tail thrown up in an S clear of the back, a hunched two-lobe body
+    // (not one ball), and a small head with an actual ear point, not a single dark pixel.
+    var sx = sxOf(3.90 * W, 1), k = (y - HZ) / 2.5, dir = -1;
+    if (sx < -60 || sx > W + 60) return;
+    var u1 = Math.max(2, Math.round(0.075 * k)), c = C('#26292d'), dk = C('#181b1e'), lt = C('#4a555e'), hd = C('#383f45');
+    var F = function (v) { return sx + dir * Math.round(u1 * v); };              // + forward (nose side), - rearward
+    var rim = lifeRim(sx, u1 * 1.5);
+    lifeContact(sx, y, u1 * 3.4);
+    if (rim) lifeCast(F(-0.5), y, Math.round(u1 * 4.4), Math.round(u1 * 4.4), 0.18);
+    // tail: leaves the rear haunch, bulges back and up, then hooks forward over the back to the tip
+    var rx = F(-1.6), ry = y - Math.round(u1 * 0.6);
+    var m1x = F(-2.0), m1y = y - Math.round(u1 * 2.3);
+    var m2x = F(-0.6), m2y = y - Math.round(u1 * 3.6);
+    var tpx = F(0.5), tpy = y - Math.round(u1 * 2.9);
+    lifeLimb(rx, ry, m1x, m1y, Math.max(2, Math.round(u1 * 1.3)), Math.max(2, Math.round(u1 * 1.15)), c);
+    lifeLimb(m1x, m1y, m2x, m2y, Math.max(2, Math.round(u1 * 1.15)), Math.max(2, Math.round(u1 * 0.95)), c);
+    lifeLimb(m2x, m2y, tpx, tpy, Math.max(2, Math.round(u1 * 0.95)), Math.max(1, Math.round(u1 * 0.7)), dk);
+    disc(F(-0.85), y - Math.round(u1 * 0.85), Math.round(u1 * 1.1), c);          // body: haunch, low and to the rear,
+    disc(F(0.25), y - Math.round(u1 * 1.3), Math.round(u1 * 0.85), c);           // and a raised shoulder set forward
+    if (rim) {                                                                   // highlight along the tail's outer
+      var thi = 4, thk, thf, thx, thy, sg;                                       // curve, so it lifts clear of the back
+      for (thk = 0; thk <= thi; thk++) {
+        thf = thk / thi;
+        if (thf < 0.5) { sg = thf * 2; thx = m1x + (m2x - m1x) * sg; thy = m1y + (m2y - m1y) * sg; }
+        else { sg = (thf - 0.5) * 2; thx = m2x + (tpx - m2x) * sg; thy = m2y + (tpy - m2y) * sg; }
+        px(Math.round(thx), Math.round(thy) - Math.max(1, Math.round(u1 * 0.4 * (1 - thf))), lt);
+      }
+    }
+    var hx = F(1.3), hy = y - Math.round(u1 * 1.5);                              // head, well forward and raised
+    var hr = Math.max(2, Math.round(u1 * 0.62));
+    disc(hx, hy, hr, hd);                                                        // a shade lighter than the body,
+    var necky = hy + Math.round(u1 * 0.6);                                       // seam sits low, off the nose's row
+    px(Math.round(hx - dir * hr * 0.8), necky, dk);                              // so the two marks don't read as eyes
+    px(Math.round(hx - dir * hr * 0.8), necky + 1, dk);                          // where it joins the shoulder
+    px(hx + dir * Math.round(u1 * 0.6), hy + Math.round(u1 * 0.15), dk);         // nose, tucked in feeding
+    var erx = Math.round(hx - dir * hr * 0.45);                                  // ear: set back on the crown, a
+    px(erx, hy - hr, hd); px(erx, hy - hr - 1, hd); px(erx - dir, hy - hr, hd);   // point, not a single dot -
+    px(erx, hy - hr + 1, dk);                                                    // dark crease where it meets the head
+  }
+  function lifePigeon(x, y, k, peck) {
+    // one pigeon, side-on: a plump round body on a short tail, a small round head on a neck -
+    // down at the pavement pecking, or up and alert - which is what keeps it a bird and not a box.
+    var body = C('#6d777b'), dk = C('#4a555e'), dark = C('#26292d');
+    var br = Math.max(2, Math.round(0.16 * k)), by = y - br;
+    disc(x, by, br, body);
+    disc(x - Math.round(br * 0.35), by + Math.round(br * 0.25), Math.round(br * 0.8), dk);
+    px(x - br - 1, by, dark);                                    // short tail, past the rear
+    var hr = Math.max(1, Math.round(br * 0.5)), hx = x + Math.round(br * 0.7);
+    var hy = peck ? y - Math.round(hr * 0.4) : by - Math.round(br * 0.75);
+    lifeLimb(x + Math.round(br * 0.3), by - Math.round(br * 0.3), hx, hy, 1, 1, dark);
+    disc(hx, hy, hr, dark);
+    px(x - Math.round(br * 0.2), y, dark); px(x + Math.round(br * 0.3), y, dark);   // thin legs
+  }
+  function lifePigeons(y) {
+    // three pigeons working the empty pavement outside a shop front before the sidewalk fills
+    // up: as much a bit of downtown Toronto at dawn as the people waiting for the streetcar.
+    var sx = sxOf(0.035 * W, 1), k = (y - HZ) / 2.5, g = Math.max(3, Math.round(0.30 * k));
+    if (sx < -20 || sx > W + 20) return;
+    lifeContact(sx, y, g * 1.6);
+    lifePigeon(sx - g, y, k, hash(2011) > 0.4);
+    lifePigeon(sx + Math.round(g * 0.35), y, k, hash(2012) > 0.4);
+    lifePigeon(sx + Math.round(g * 1.5), y - 1, k * 0.96, hash(2013) > 0.4);
+  }
+  function lifeGoose(x, y, dir, k) {
+    // a Canada goose grazing, head down: a plump brown-grey body, the black neck bent to the
+    // grass with the white cheek patch that is the one thing that reads it as a goose, not a duck.
+    var body = C('#6f573c'), dk = C('#4b3827'), neck = C('#26292d'), cheek = C('#cfd6d8');
+    var bh = Math.max(3, Math.round(0.19 * k)), bw = Math.max(6, Math.round(0.42 * k));
+    disc(x, y - Math.round(bh * 0.85), bh, body);
+    disc(Math.round(x - dir * bw * 0.16), y - Math.round(bh * 0.55), Math.round(bh * 0.85), dk);
+    var nx = x + dir * Math.round(bw * 0.30), ny = y - Math.round(bh * 1.15);
+    lifeLimb(nx, ny, nx + dir * Math.round(bw * 0.14), y, Math.max(2, Math.round(bh * 0.42)), Math.max(1, Math.round(bh * 0.28)), neck);
+    var hx = nx + dir * Math.round(bw * 0.14), hr = Math.max(2, Math.round(bh * 0.36));
+    disc(hx, y - Math.round(hr * 0.5), hr, neck);
+    px(hx + dir * Math.round(hr * 0.4), Math.round(y - hr * 0.4), cheek);
+  }
+  function lifeGeese(y) {
+    // a pair grazing the open lawn, clear of the flower bed, the bin and the path: how a
+    // September morning in a Toronto park actually looks.
+    var sx = sxOf(3.05 * W, 1), k = (y - HZ) / 2.5, rim = lifeRim(sx, 0.3 * k);
+    if (sx < -80 || sx > W + 80) return;
+    lifeContact(Math.round(sx - 0.7 * k), y, 0.5 * k);
+    lifeContact(Math.round(sx + 0.75 * k), y + 1, 0.42 * k);
+    if (rim) { lifeCast(Math.round(sx - k), y, Math.round(0.6 * k), Math.round(0.7 * k), 0.20); lifeCast(Math.round(sx + 0.45 * k), y + 1, Math.round(0.5 * k), Math.round(0.6 * k), 0.20); }
+    lifeGoose(Math.round(sx - 0.7 * k), y, -1, k);
+    lifeGoose(Math.round(sx + 0.75 * k), y + 1, 1, k * 0.93);
+  }
+  function lifeCyclist(x0, by) {
+    // A Bike Share Toronto bike, dark green-grey with a front basket: queued behind the worker's
+    // boxes, one foot down, waiting on the streetcar the same as the cars ahead - then riding off
+    // with the rest of the queue (x0 already carries that motion, from farTraffic's tramCyclistOff).
+    // This lane only ever faces left, so the basket and bars sit toward x0.
+    var k = (by - HZ) / 2.5, L = Math.max(u(10), Math.round(1.05 * k)), rr = Math.max(2, Math.round(0.33 * k));
+    if (x0 - 20 > W || x0 + L + 20 < 0) return;
+    var frame = C('#2c3840'), frameDk = C('#22292d'), frameLt = C('#4a555e'), tire = C('#26292d'), hub = C('#4a555e');
+    var fx = x0 + Math.round(L * 0.08), rx = x0 + Math.round(L * 0.92), gy = by - rr;
+    lifeContact(x0 + Math.round(L * 0.5), by, L * 0.55);
+    var bbx = x0 + Math.round(L * 0.58), bby = by - Math.round(0.30 * k);
+    var seatx = x0 + Math.round(L * 0.64), seaty = by - Math.round(0.84 * k);
+    var headx = x0 + Math.round(L * 0.14), heady = by - Math.round(0.90 * k);
+    var handx = x0 + Math.round(L * 0.04), handy = by - Math.round(0.96 * k);
+    var tw = Math.max(2, Math.round(0.05 * k)), tw2 = Math.max(1, tw - 1);
+    lifeLimb(bbx, bby, headx, heady, tw, tw, frame);                          // down tube
+    lifeLimb(bbx, bby, seatx, seaty, tw, tw, frame);                          // seat tube
+    lifeLimb(bbx, bby, rx, gy, tw, tw2, frameDk);                             // chainstay
+    lifeLimb(headx, heady, fx, gy, tw, tw2, frameDk);                         // fork
+    lifeLimb(headx, heady, handx, handy, tw2, tw2, frameDk);                  // stem
+    tramWheel(fx, gy, rr, tire, hub, tire); tramWheel(rx, gy, rr, tire, hub, tire);
+    var bskw = Math.max(3, Math.round(L * 0.20)), bskx = x0 - Math.round(L * 0.05), bsky0 = by - Math.round(1.06 * k), bsky1 = by - Math.round(0.80 * k);
+    rect(bskx, bsky0, bskw, bsky1 - bsky0, frame);                            // front basket
+    hline(bskx, bskx + bskw - 1, bsky0, frameLt);
+    vline(bskx, bsky0, bsky1 - 1, frameDk); vline(bskx + bskw - 1, bsky0, bsky1 - 1, frameDk);
+    lifeLimb(handx, handy, bskx + Math.round(bskw * 0.6), bsky1, tw2, 1, frameDk);
+    var cS = C('#8a6a3f'), cH = C('#26292d'), cT = C('#3d4a63'), cTd = C('#2c3840'), cB = C('#151719'), cBd = C('#0f1213'), cSh = C('#151719');
+    var hipx = seatx, hipy = seaty - Math.round(0.02 * k), shx = hipx - Math.round(0.12 * k), shy = hipy - Math.round(0.42 * k);
+    var kx2 = bbx + Math.round(0.05 * k), ky2 = bby - Math.round(0.05 * k), pex = bbx + Math.round(0.03 * k), pey = bby - Math.round(0.15 * k);
+    lifeLimb(hipx, hipy, kx2, ky2, Math.max(2, Math.round(0.055 * k)), Math.max(1, Math.round(0.045 * k)), cB);    // far leg, drawn first (mostly
+    lifeLimb(kx2, ky2, pex, pey, Math.max(1, Math.round(0.045 * k)), Math.max(1, Math.round(0.035 * k)), cBd);     // hidden), foot still on the pedal
+    px(pex, pey, cSh);
+    var kx1 = bbx - Math.round(0.03 * k), ky1 = hipy + Math.round(0.16 * k), gx = bbx + Math.round(0.08 * k);
+    lifeLimb(hipx, hipy, kx1, ky1, Math.max(2, Math.round(0.065 * k)), Math.max(1, Math.round(0.05 * k)), cBd);    // near leg, drawn over it,
+    lifeLimb(kx1, ky1, gx, by, Math.max(1, Math.round(0.05 * k)), Math.max(1, Math.round(0.04 * k)), cB);          // foot flat on the ground
+    px(gx, by, cSh);
+    var t0 = Math.round(shy), t1 = hipy, r, fr, w, a, b;
+    for (r = t0; r <= t1; r++) {                                             // torso, leaning forward to the bars
+      fr = (r - t0) / Math.max(1, t1 - t0); w = 0.30 * k - 0.07 * k * fr;
+      a = Math.round(hipx - (hipx - shx) * (1 - fr) - w * 0.5); b = Math.round(a + w);
+      hline(a, b, r, fr > 0.75 ? cTd : cT);
+    }
+    lifeLimb(shx, shy, handx, handy, Math.max(1, Math.round(0.055 * k)), Math.max(1, Math.round(0.045 * k)), cTd); // arm to the bars
+    var nkw = Math.max(1, Math.round(0.05 * k)), nkh = Math.max(1, Math.round(0.06 * k));
+    rect(Math.round(shx - nkw / 2), t0 - nkh, nkw, nkh + 1, cS);              // neck, closing the gap to the head
+    var hr = Math.max(2, Math.round(0.115 * k)), hcx = shx, hcy = t0 - nkh - hr;
+    disc(hcx, hcy, hr, cS);
+    hline(hcx - hr, hcx + hr - 1, hcy - hr, cH);
+  }  function lifeTreeWalker(y) {
     // Comes out from behind the big trunk and walks off the right edge of the world. The lap
     // restarts behind the trunk and waits past the world's edge, so nobody pops in and the loop is not obvious.
     var h = mpx(1.7, y), v = mpx(1.3, y), d = ((clock + 7.5) % 47) * v, x = TREEX + u(4) + d, sx, rim;
@@ -3527,10 +4215,10 @@ function mount(canvas, opts) {
   }
 
   // ---------- ambient: setInterval, never rAF - a backgrounded page never gets a frame ----------
-  function tick() { clock += 0.1; draw(); }
+  function tick() { var f = camX < 1.25 * W; clock += f ? 1 / 30 : 0.1; draw(); if (f !== fast) { clearInterval(timer); timer = null; sync(); } }   // 30 fps while the street is in view, 10 fps elsewhere
   function sync() {
     var want = ambient && !dead && visible && !env.reduce;
-    if (want && !timer) timer = setInterval(tick, 100);
+    if (want && !timer) { fast = camX < 1.25 * W; timer = setInterval(tick, fast ? 1000 / 30 : 100); }
     else if (!want && timer) { clearInterval(timer); timer = null; }
   }
   function onVis() { visible = document.visibilityState !== 'hidden'; sync(); }
