@@ -1,694 +1,233 @@
-// Portfolio data
-const portfolioData = {
-  "profile": {
-    "name": "Ayan Nalawade",
-    "age": 16,
-    "location": "Ontario, CA",
-    "bio": "16-year-old developer who likes working on projects that are challenging!",
-    "timezone": "UTC-04:00",
-    "followers": 5,
-    "following": 3,
-    "website": "https://ayan-nalawade.vercel.app/",
-    "github": "https://github.com/Ayan-Nalawade",
-    "profile_image": "https://github.com/Ayan-Nalawade.png"
-  },
-  "repositories": [
-    {
-      "name": "Chat",
-      "stars": 34,
-      "language": "Python",
-      "description": "Access multiple models such as gpt-3/3.5, gpt-4, claude+, claude-instant, bard for free!",
-      "url": "https://github.com/Ayan-Nalawade/Chat",
-      "archived": true,
-      "topics": ["AI", "API Integration", "Python"]
-    },
-    {
-      "name": "JamHacks-DocsGPT",
-      "stars": 3,
-      "language": "TypeScript",
-      "description": "Docs GPT - AI-powered documentation assistant",
-      "url": "https://github.com/Ayan-Nalawade/JamHacks-DocsGPT",
-      "topics": ["TypeScript", "AI", "Documentation"]
-    },
-    {
-      "name": "PoeTokenGen",
-      "stars": 2,
-      "language": "Python",
-      "description": "Poe Token Generation download for anyone who needs it",
-      "url": "https://github.com/Ayan-Nalawade/PoeTokenGen",
-      "topics": ["Python", "Authentication", "Tokens"]
-    },
-    {
-      "name": "DocsGPT",
-      "stars": 1,
-      "language": "CSS",
-      "description": "Docs GPT - Documentation with AI assistance",
-      "url": "https://github.com/Ayan-Nalawade/DocsGPT",
-      "topics": ["CSS", "Documentation", "AI"]
-    },
-    {
-      "name": "CineMatch",
-      "stars": 0,
-      "language": "JavaScript",
-      "description": "CineMatch is designed to provide a seamless experience for movie enthusiasts. It allows users to browse movie suggestions, manage profiles, and search for their favorite films.",
-      "url": "https://github.com/Ayan-Nalawade/CineMatch",
-      "topics": ["JavaScript", "React", "Movies", "Entertainment"]
-    },
-    {
-      "name": "ListenO",
-      "stars": 0,
-      "language": "TypeScript",
-      "description": "Listen to any song! A music streaming application built with TypeScript.",
-      "url": "https://github.com/Ayan-Nalawade/ListenO",
-      "topics": ["TypeScript", "Music", "Streaming", "Web APIs"]
-    },
-    {
-      "name": "Snake",
-      "stars": 0,
-      "language": "Python",
-      "description": "A snake game which implements PyTorch in order to play the game",
-      "url": "https://github.com/Ayan-Nalawade/Snake",
-      "topics": ["Python", "PyTorch", "AI/ML", "Game Development"]
-    },
-    {
-      "name": "ChatBot",
-      "stars": 0,
-      "language": "TypeScript",
-      "description": "A GUI version of a chatBot with modern interface",
-      "url": "https://github.com/Ayan-Nalawade/ChatBot",
-      "topics": ["TypeScript", "AI", "GUI", "Chat"]
-    },
-    {
-      "name": "Ayan-Nalawade.github.io",
-      "stars": 0,
-      "language": "HTML",
-      "description": "Personal website repository",
-      "url": "https://github.com/Ayan-Nalawade/Ayan-Nalawade.github.io",
-      "topics": ["HTML", "Portfolio", "Website"]
-    },
-    {
-      "name": "DiscStorage",
-      "stars": 0,
-      "language": "Python",
-      "description": "A simple website/code to storage images on discord",
-      "url": "https://github.com/Ayan-Nalawade/DiscStorage",
-      "topics": ["Python", "Discord", "Storage"]
-    },
-    {
-      "name": "Public-Scripts",
-      "stars": 0,
-      "language": "Shell",
-      "description": "All the scripts available to the public",
-      "url": "https://github.com/Ayan-Nalawade/Public-Scripts",
-      "topics": ["Shell", "Scripts", "Utilities"]
-    },
-    {
-      "name": "Dyan-up-v1",
-      "stars": 0,
-      "language": "Java",
-      "description": "Java application project",
-      "url": "https://github.com/Ayan-Nalawade/Dyan-up-v1",
-      "topics": ["Java", "Application"]
-    }
-  ]
-};
-
-// Language statistics based on GitHub repositories
-const languageStats = {
-  "Python": { "count": 6, "percentage": 27.3 },
-  "TypeScript": { "count": 5, "percentage": 22.7 },
-  "JavaScript": { "count": 2, "percentage": 9.1 },
-  "CSS": { "count": 2, "percentage": 9.1 },
-  "Java": { "count": 1, "percentage": 4.5 },
-  "HTML": { "count": 1, "percentage": 4.5 },
-  "Shell": { "count": 1, "percentage": 4.5 },
-  "Other": { "count": 4, "percentage": 18.2 }
-};
-
-// DOM Elements
-let terminalInput, terminalOutput, terminalCursor;
-let commandHistory = [];
-let historyIndex = -1;
-
-// Terminal commands and their functions
-const terminalCommands = {
-  help: () => {
-    return `Available commands:
-  help      - Show this help message
-  skills    - Display programming language statistics
-  clear     - Clear the terminal screen
-  ls        - List available information sections
-  about     - Show bio and personal information
-  projects  - Show top GitHub repositories
-  contact   - Display contact information
-  whoami    - Show user profile information`;
-  },
-  
-  skills: () => {
-    let output = `Programming Language Statistics (from GitHub repositories):\n\n`;
-    
-    Object.entries(languageStats).forEach(([language, data]) => {
-      const barLength = Math.round(data.percentage / 5); // Scale to 20 chars max
-      const bar = '█'.repeat(barLength) + '░'.repeat(20 - barLength);
-      output += `${language.padEnd(12)} ${bar} ${data.percentage.toFixed(1)}% (${data.count} repos)\n`;
-    });
-    
-    output += `\nTotal repositories analyzed: 22`;
-    return output;
-  },
-  
-  clear: () => {
-    if (terminalOutput) {
-      terminalOutput.innerHTML = '';
-    }
-    return '';
-  },
-  
-  ls: () => {
-    return `Available information sections:
-  about/     - Personal information and bio
-  projects/  - GitHub repositories and projects
-  contact/   - Contact information and links
-  skills/    - Programming language statistics`;
-  },
-  
-  about: () => {
-    return `${portfolioData.profile.name}
-Age: ${portfolioData.profile.age}
-Location: ${portfolioData.profile.location}
-Timezone: ${portfolioData.profile.timezone}
-
-Bio: ${portfolioData.profile.bio}
-
-GitHub: ${portfolioData.profile.github}
-Website: ${portfolioData.profile.website}
-Followers: ${portfolioData.profile.followers} | Following: ${portfolioData.profile.following}`;
-  },
-  
-  projects: () => {
-    const sortedRepos = portfolioData.repositories
-      .sort((a, b) => b.stars - a.stars)
-      .slice(0, 6);
-    
-    let output = `Top GitHub Repositories:\n\n`;
-    
-    sortedRepos.forEach((repo, index) => {
-      const stars = repo.stars > 0 ? `⭐ ${repo.stars}` : '⭐ 0';
-      const archived = repo.archived ? ' [ARCHIVED]' : '';
-      output += `${index + 1}. ${repo.name} ${stars}${archived}\n`;
-      output += `   Language: ${repo.language}\n`;
-      output += `   ${repo.description}\n`;
-      output += `   ${repo.url}\n\n`;
-    });
-    
-    return output;
-  },
-  
-  contact: () => {
-    return `Contact Information:
-
-Location: ${portfolioData.profile.location}
-Timezone: ${portfolioData.profile.timezone}
-
-Online Presence:
-• GitHub: ${portfolioData.profile.github}
-• Website: ${portfolioData.profile.website}
-
-Hobbies & Interests:
-• Chess - Strategic thinking and problem solving
-• Badminton and Soccer - Staying active and competitive  
-• Video Games - Gaming and interactive experiences`;
-  },
-  
-  whoami: () => {
-    return `${portfolioData.profile.name}
-
-You are viewing the portfolio of a 16-year-old developer from Ontario, CA.
-Passionate about challenging projects and innovative solutions.
-
-Current terminal session: ayan@portfolio:~$
-System: Portfolio Terminal v1.0`;
+const $=s=>document.querySelector(s);
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const safe=f=>{try{return f()}catch(e){}};
+const clamp=v=>v<0?0:v>1?1:v;
+let scene=null,panelled=false,flowApply=()=>{};
+// both layouts write the same inline props; whichever one hands over has to give them back
+function clearFx(els){
+  for(const el of els){
+    el.style.opacity='';el.style.transform='';el.style.visibility='';
+    el.style.maskImage='';el.style.webkitMaskImage='';
   }
-};
-
-// Initialize the application
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Initializing portfolio...');
-    initializeTerminal();
-    initializeModal();
-    renderProjects();
-    initializeNavigation();
-    initializeScrollAnimations();
-    console.log('Portfolio initialized successfully');
-});
-
-// Initialize terminal functionality
-function initializeTerminal() {
-    terminalInput = document.getElementById('terminal-input');
-    terminalOutput = document.getElementById('terminal-output');
-    terminalCursor = document.getElementById('terminal-cursor');
-    
-    if (!terminalInput || !terminalOutput) {
-        console.error('Terminal elements not found');
-        return;
-    }
-    
-    // Handle terminal input
-    terminalInput.addEventListener('keydown', handleTerminalInput);
-    
-    // Focus terminal input when clicking on terminal
-    const terminalContainer = document.querySelector('.terminal-container');
-    if (terminalContainer) {
-        terminalContainer.addEventListener('click', () => {
-            terminalInput.focus();
-        });
-    }
-    
-    // Update cursor position
-    terminalInput.addEventListener('input', updateCursorPosition);
-    terminalInput.addEventListener('keyup', updateCursorPosition);
-    
-    // Initial cursor position
-    updateCursorPosition();
-    
-    // Auto-focus terminal input
-    setTimeout(() => {
-        terminalInput.focus();
-    }, 500);
-    
-    console.log('Terminal initialized');
 }
 
-// Handle terminal input and commands
-function handleTerminalInput(e) {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        const command = terminalInput.value.trim();
-        
-        if (command) {
-            // Add to command history
-            commandHistory.unshift(command);
-            if (commandHistory.length > 50) {
-                commandHistory.pop();
-            }
-            historyIndex = -1;
-            
-            // Display command
-            appendToTerminal(`ayan@portfolio:~$ ${command}`, 'command');
-            
-            // Execute command
-            executeCommand(command);
-        } else {
-            appendToTerminal('ayan@portfolio:~$ ', 'command');
-        }
-        
-        // Clear input
-        terminalInput.value = '';
-        updateCursorPosition();
-        
-    } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        navigateHistory(1);
-        
-    } else if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        navigateHistory(-1);
-        
-    } else if (e.key === 'Tab') {
-        e.preventDefault();
-        autoCompleteCommand();
-    }
+// ---------- the blog board ----------
+// the six photo pins ship baked into the HTML. the fetch swaps them for whatever the blog
+// says right now; if it is slow or down, the baked ones stay and the reader never learns
+// there was a network call.
+const BLOG='https://ayannalawade-website.vercel.app/';
+const IMG=BLOG+'image_data/';
+const THUMB=/^(?!.*\.\.)[\w./ -]+\.(png|jpe?g|gif|webp)$/i;   // no .. - the blog builds the path
+
+function pin(title,thumb){
+  const a=document.createElement('a');
+  a.className='pin pin-photo';
+  a.href=BLOG;                                    // the blog has no per-post urls
+  if(thumb&&THUMB.test(thumb)){
+    const img=document.createElement('img');
+    img.src=IMG+thumb;
+    img.alt=title;
+    img.loading='lazy';
+    img.referrerPolicy='no-referrer';
+    a.appendChild(img);
+  }else a.classList.add('title-only');
+  const t=document.createElement('span');
+  t.className='pin-title';
+  t.textContent=title;
+  a.appendChild(t);
+  return a;
 }
 
-// Navigate command history
-function navigateHistory(direction) {
-    if (direction > 0 && historyIndex < commandHistory.length - 1) {
-        historyIndex++;
-        terminalInput.value = commandHistory[historyIndex];
-    } else if (direction < 0 && historyIndex > -1) {
-        historyIndex--;
-        terminalInput.value = historyIndex >= 0 ? commandHistory[historyIndex] : '';
-    }
-    updateCursorPosition();
+function initBlog(){
+  const host=$('#pins');
+  if(!host||!window.fetch) return;
+  const ac=safe(()=>new AbortController());
+  const bail=ac?setTimeout(()=>ac.abort(),4000):null;
+  window.blogReady=fetch(BLOG+'api/blogs',ac?{signal:ac.signal}:undefined)
+    .then(r=>r.ok?r.json():Promise.reject(r.status))
+    .then(list=>{
+      clearTimeout(bail);
+      if(!Array.isArray(list)) return 0;
+      const posts=list.filter(p=>p&&p.name!=='sample-post.txt'&&p.title);
+      const shot=p=>p.thumbnail&&THUMB.test(p.thumbnail);
+      // the api is alphabetical, so the ones he'd name first go first (and the 18 MB Rhythm Hacks thumbnail falls off the end)
+      const first=['FullAdder.txt','sumo-bot.txt','ChessHacks.txt','DocsGPT.txt','spurhacks.txt','Catalyst.txt'];
+      const rank=p=>{const i=first.indexOf(p.name);return i<0?first.length:i;};
+      const pick=posts.filter(shot).sort((a,b)=>rank(a)-rank(b)).slice(0,6);
+      for(const p of posts){                      // top up with title-only pins if the blog is light on images
+        if(pick.length>=6) break;
+        if(!shot(p)) pick.push(p);
+      }
+      if(!pick.length) return 0;
+      host.replaceChildren(...pick.map(p=>pin(String(p.title),p.thumbnail)));
+      return pick.length;
+    })
+    .catch(()=>{clearTimeout(bail);return 0;});
 }
 
-// Auto-complete command
-function autoCompleteCommand() {
-    const input = terminalInput.value.toLowerCase();
-    const commands = Object.keys(terminalCommands);
-    const matches = commands.filter(cmd => cmd.startsWith(input));
-    
-    if (matches.length === 1) {
-        terminalInput.value = matches[0];
-        updateCursorPosition();
-    } else if (matches.length > 1) {
-        appendToTerminal(`Possible completions: ${matches.join(', ')}`);
+// ---------- grain: content comes apart in specks rather than dimming ----------
+// a stack of thresholded noise tiles used as CSS masks. because it's a mask the real text
+// stays real text - selectable, searchable, readable by a screen reader.
+const GRAIN=[];
+function buildGrain(){
+  const S=120, cell=2, n=12;
+  for(let k=1;k<=n;k++){
+    const keep=1-k/(n+1);
+    const c=document.createElement('canvas'); c.width=c.height=S;
+    const g=c.getContext('2d');
+    g.fillStyle='#fff';
+    for(let y=0;y<S;y+=cell) for(let x=0;x<S;x+=cell){
+      if(Math.random()<keep) g.fillRect(x,y,cell,cell);
     }
+    GRAIN.push(`url("${c.toDataURL('image/png')}")`);
+  }
+}
+function setGrain(el,t){
+  if(!GRAIN.length||t<=.02){
+    if(el.style.maskImage||el.style.webkitMaskImage){el.style.maskImage='';el.style.webkitMaskImage='';}
+    return;
+  }
+  const u=GRAIN[Math.min(GRAIN.length-1,Math.floor(t*GRAIN.length))];
+  if(el.style.maskImage===u) return;
+  el.style.webkitMaskImage=u; el.style.maskImage=u;
+  el.style.webkitMaskSize='120px 120px'; el.style.maskSize='120px 120px';
 }
 
-// Execute terminal command
-function executeCommand(command) {
-    const cmd = command.toLowerCase().trim();
-    
-    if (terminalCommands[cmd]) {
-        const output = terminalCommands[cmd]();
-        if (output) {
-            appendToTerminal(output);
-        }
-    } else {
-        appendToTerminal(`Command not found: ${command}. Type 'help' for available commands.`, 'error');
-    }
-}
+function drive(p){if(scene) safe(()=>scene.set({progress:clamp(p)}));}
 
-// Append text to terminal output
-function appendToTerminal(text, className = '') {
-    const line = document.createElement('div');
-    line.className = `terminal-line ${className}`;
-    line.textContent = text;
-    terminalOutput.appendChild(line);
-    
-    // Scroll to bottom
-    terminalOutput.scrollTop = terminalOutput.scrollHeight;
-}
+// ---------- panels ----------
+// the page stops being a scrolling column: every stop gets a whole screen and scrolling
+// hands one over to the next in place, while the scene underneath keeps panning - which is
+// what makes four stops read as one walk. a tall empty spacer supplies the scroll range so
+// the native scrollbar, keyboard and trackpad momentum all keep working.
+function initPanels(){
+  if(reduce) return false;
+  const panels=[...document.querySelectorAll('.panel')];
+  if(panels.length<2) return false;
+  const last=panels.length-1;
+  let space=null;
 
-// Update cursor position
-function updateCursorPosition() {
-    if (!terminalInput || !terminalCursor) return;
-    
-    // Simple cursor positioning - just show it's active
-    terminalCursor.style.display = 'inline';
-}
+  const roomy=()=>matchMedia('(min-width:860px) and (min-height:620px)').matches;
+  // measure with the panel layout applied but before anything paints; back out if a stop is
+  // too tall to sit on one screen, rather than cropping it
+  const fits=()=>panels.every(p=>p.scrollHeight<=innerHeight+2);
 
-// Initialize modal functionality
-function initializeModal() {
-    const modal = document.getElementById('project-modal');
-    const modalClose = document.querySelector('.modal-close');
-    
-    if (modalClose) {
-        modalClose.addEventListener('click', closeModal);
+  function engage(){
+    if(panelled) return true;
+    document.body.classList.add('panels');
+    if(!roomy()||!fits()){document.body.classList.remove('panels');return false;}
+    if(!space){
+      space=document.createElement('div');
+      space.className='scroll-space';
+      space.setAttribute('aria-hidden','true');
+      document.body.appendChild(space);
     }
-    
-    if (modal) {
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal || e.target.classList.contains('modal-overlay')) {
-                closeModal();
-            }
-        });
-    }
-    
-    // Close modal on escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
-            closeModal();
-        }
+    space.style.height=(panels.length*100)+'vh';
+    clearFx(document.querySelectorAll('.stop'));
+    panelled=true;
+    return true;
+  }
+  // a window that shrinks past a stop's own height would crop it with nothing left to scroll
+  // to, so hand the page back to the flowing layout rather than hold on to it
+  function drop(){
+    if(!panelled) return;
+    panelled=false;
+    document.body.classList.remove('panels');           // the spacer is display:none once it's off
+    clearFx(panels);
+    flowApply();
+  }
+  function apply(){
+    if(!panelled) return;
+    const max=document.documentElement.scrollHeight-innerHeight;
+    const pos=(max>0?scrollY/max:0)*last;                // one unit of travel per hand-off
+    panels.forEach((el,i)=>{
+      const d=pos-i, a=Math.abs(d);
+      const t=a<=.34?0:clamp((a-.34)/.46);               // a flat top so each screen is stable to read
+      setGrain(el,t);
+      // the grain does the disappearing; opacity only clears the last specks
+      el.style.opacity=clamp(1-(t-.7)/.3).toFixed(3);
+      el.style.transform=`translateY(${(d*-46).toFixed(1)}px)`;
+      el.style.visibility=t<1?'visible':'hidden';        // keeps parked panels out of the tab order
     });
+    drive(pos/last);
+  }
+  // listen even when the first attempt fails: a window that starts too short to hold a stop
+  // can still be grown into one, and apply() stands down on its own while panels are off
+  const started=engage();
+  if(started) apply();
+  addEventListener('scroll',apply,{passive:true});
+  // no scene.resize() here: the scene keeps its own debounced resize, and calling it per event
+  // reallocates the whole pixel buffer on every step of a window drag
+  addEventListener('resize',()=>{
+    if(panelled&&!(roomy()&&fits())) drop();
+    else if(!panelled) engage();
+    if(panelled){space.style.height=(panels.length*100)+'vh';apply();}
+  },{passive:true});
+  addEventListener('load',apply);
+  if(document.fonts) document.fonts.ready.then(apply).catch(()=>{});
+  return started;
 }
 
-// Render projects
-function renderProjects() {
-    const projectsGrid = document.getElementById('projects-grid');
-    if (!projectsGrid) {
-        console.error('Projects grid not found');
-        return;
+// ---------- fallback for short, narrow or still screens: stops dissolve as they pass ----------
+function initPageDissolve(){
+  const stops=[...document.querySelectorAll('.stop')];
+  function apply(){
+    if(panelled) return;                                 // panels own the page while engaged
+    const doc=document.documentElement.scrollHeight-innerHeight;
+    drive(doc>0?scrollY/doc:0);
+    if(reduce) return;
+    const vh=innerHeight;
+    for(const el of stops){
+      const r=el.getBoundingClientRect();
+      const ramp=Math.max(1,Math.min(r.height,vh)*.5);
+      const inR=clamp((vh-r.top)/ramp), outR=clamp(r.bottom/ramp);
+      const t=1-Math.min(inR,outR);
+      setGrain(el,t);
+      el.style.opacity=clamp(1-(t-.7)/.3).toFixed(3);
+      el.style.transform=`translateY(${((1-inR)*22-(1-outR)*22).toFixed(1)}px)`;
     }
-    
-    // Sort repositories by stars (descending)
-    const sortedRepos = portfolioData.repositories.sort((a, b) => b.stars - a.stars);
-    
-    projectsGrid.innerHTML = sortedRepos.map(repo => `
-        <div class="project-card glass-card" data-project="${repo.name}">
-            <div class="project-header">
-                <div>
-                    <h3 class="project-name">${repo.name}</h3>
-                    ${repo.archived ? '<span class="project-status archived">Archived</span>' : ''}
-                </div>
-                <div class="project-stars">
-                    <span>★</span>
-                    <span>${repo.stars}</span>
-                </div>
-            </div>
-            
-            <div class="project-language">${repo.language}</div>
-            
-            <p class="project-description">${repo.description}</p>
-            
-            <div class="project-topics">
-                ${repo.topics.map(topic => `<span class="project-topic">${topic}</span>`).join('')}
-            </div>
-            
-            <div class="project-actions">
-                <a href="${repo.url}" target="_blank" class="glass-button glass-button-primary">
-                    <span>View on GitHub</span>
-                </a>
-                <button class="glass-button glass-button-secondary preview-btn" data-repo="${repo.name}" type="button">
-                    <span>View Details</span>
-                </button>
-            </div>
-        </div>
-    `).join('');
-    
-    // Add event listeners for preview buttons
-    setTimeout(() => {
-        document.querySelectorAll('.preview-btn').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                const repoName = this.getAttribute('data-repo');
-                openProjectModal(repoName);
-            });
-        });
-    }, 100);
+  }
+  flowApply=apply;
+  apply();
+  addEventListener('scroll',apply,{passive:true});
+  addEventListener('resize',apply,{passive:true});
+  addEventListener('load',apply);
+  if(document.fonts) document.fonts.ready.then(apply).catch(()=>{});
 }
 
-// Open project details modal
-function openProjectModal(repoName) {
-    const repo = portfolioData.repositories.find(r => r.name === repoName);
-    const modal = document.getElementById('project-modal');
-    const modalTitle = document.getElementById('modal-title');
-    const modalContent = document.getElementById('project-content');
-    
-    if (!repo || !modal) {
-        console.error('Repository not found or modal not available:', repoName);
-        return;
-    }
-    
-    modalTitle.textContent = `${repo.name} - Project Details`;
-    
-    const projectDetails = `
-        <div class="project-details">
-            <h2>${repo.name}</h2>
-            <p><strong>Language:</strong> ${repo.language}</p>
-            <p><strong>Stars:</strong> ★ ${repo.stars}</p>
-            ${repo.archived ? '<p><strong>Status:</strong> Archived</p>' : ''}
-            
-            <h3>Description</h3>
-            <p>${repo.description}</p>
-            
-            <h3>Topics</h3>
-            <div class="modal-topics">
-                ${repo.topics.map(topic => `<span class="modal-topic">${topic}</span>`).join('')}
-            </div>
-            
-            <h3>Repository</h3>
-            <p>Visit the <a href="${repo.url}" target="_blank" style="color: var(--color-primary);">GitHub repository</a> to view the complete source code and documentation.</p>
-            
-            <div class="project-note">
-                <p><em>View the complete project details and source code on GitHub.</em></p>
-            </div>
-        </div>
-        
-        <style>
-            .project-details h2 {
-                color: var(--color-text);
-                margin-bottom: 1rem;
-                font-size: 1.5rem;
-            }
-            
-            .project-details h3 {
-                color: var(--color-text);
-                margin: 1.5rem 0 0.5rem 0;
-                font-size: 1.2rem;
-            }
-            
-            .project-details p {
-                margin-bottom: 1rem;
-                line-height: 1.6;
-                color: var(--color-text-secondary);
-            }
-            
-            .modal-topics {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 0.5rem;
-                margin-bottom: 1rem;
-            }
-            
-            .modal-topic {
-                background: rgba(var(--color-primary-rgb), 0.1);
-                color: var(--color-primary);
-                padding: 0.25rem 0.5rem;
-                border-radius: 1rem;
-                font-size: 0.8rem;
-                border: 1px solid rgba(var(--color-primary-rgb), 0.3);
-            }
-            
-            .project-note {
-                background: var(--color-secondary);
-                border-left: 3px solid var(--color-primary);
-                padding: 1rem;
-                margin-top: 2rem;
-                border-radius: 0.5rem;
-            }
-            
-            .project-note p {
-                margin: 0;
-                font-style: italic;
-                color: var(--color-text-secondary);
-            }
-        </style>
-    `;
-    
-    modalContent.innerHTML = projectDetails;
-    modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
+// ---------- the greeting gets laid down left to right, not faded up ----------
+function initGreeting(){
+  if(reduce) return;
+  const s=$('.stop-street');
+  if(!s) return;
+  s.classList.add('armed');
+  // setTimeout, not rAF: a page that stops painting mid-reveal must still un-hide
+  setTimeout(()=>s.classList.add('in'),40);
+  // a clip-path transition needs frames to finish; if they stop coming, drop the clip entirely
+  setTimeout(()=>s.classList.remove('armed'),2200);
 }
 
-// Close modal
-function closeModal() {
-    const modal = document.getElementById('project-modal');
-    if (modal) {
-        modal.classList.add('hidden');
-        document.body.style.overflow = 'auto';
-    }
+// ---------- run inits only once we know the page is painting; isolated so one failing can't block the rest ----------
+let started=false;
+function runInits(){
+  if(started) return;
+  started=true;
+  if(window.ParkScene) scene=safe(()=>ParkScene.mount($('#park'),{progress:0}))||null;
+  // only once a sky is really being painted does the sky text drop its own cream ground
+  if(scene){window.park=scene;document.body.classList.add('scene');safe(()=>scene.setAmbient(!reduce));}
+  safe(buildGrain);
+  // the flowing layout is always listening; it stands down while the panels are engaged, so a
+  // window that shrinks past a stop's height can hand back to it without re-initialising
+  safe(initPageDissolve);
+  safe(initPanels);
+  if(!panelled) document.body.classList.remove('panels');
+  safe(initGreeting);
+  safe(initBlog);
+  const mark=()=>document.body.classList.toggle('scrolled',scrollY>40);
+  mark();
+  addEventListener('scroll',mark,{passive:true});
+  if(panelled) safe(()=>dispatchEvent(new Event('scroll')));
 }
-
-// Initialize navigation
-function initializeNavigation() {
-    // Handle navigation links with proper smooth scrolling
-    const navLinks = document.querySelectorAll('.nav-link[href^="#"]');
-    
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const targetId = this.getAttribute('href').substring(1);
-            console.log('Navigating to:', targetId);
-            smoothScrollTo(targetId);
-        });
-    });
-    
-    // Handle hero "View Projects" button
-    const viewProjectsBtn = document.querySelector('.hero-actions a[href="#projects"]');
-    if (viewProjectsBtn) {
-        viewProjectsBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            console.log('View Projects button clicked');
-            smoothScrollTo('projects');
-        });
-    }
-    
-    // Update active nav link on scroll
-    window.addEventListener('scroll', updateActiveNavLink);
-    
-    console.log('Navigation initialized');
-}
-
-// Smooth scroll to target
-function smoothScrollTo(targetId, offset = 80) {
-    const targetElement = document.getElementById(targetId);
-    if (!targetElement) {
-        console.error('Target element not found:', targetId);
-        return;
-    }
-    
-    const targetPosition = targetElement.offsetTop - offset;
-    console.log('Scrolling to position:', targetPosition);
-    
-    window.scrollTo({
-        top: targetPosition,
-        behavior: 'smooth'
-    });
-}
-
-// Update active navigation link
-function updateActiveNavLink() {
-    const sections = document.querySelectorAll('section[id]');
-    const navLinks = document.querySelectorAll('.nav-link[href^="#"]');
-    
-    let currentSection = '';
-    
-    sections.forEach(section => {
-        const sectionTop = section.offsetTop - 150;
-        const sectionHeight = section.clientHeight;
-        
-        if (window.scrollY >= sectionTop && window.scrollY < sectionTop + sectionHeight) {
-            currentSection = section.getAttribute('id');
-        }
-    });
-    
-    navLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href') === `#${currentSection}`) {
-            link.classList.add('active');
-        }
-    });
-}
-
-// Initialize scroll animations
-function initializeScrollAnimations() {
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
-    
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('animate-in');
-            }
-        });
-    }, observerOptions);
-    
-    // Observe all glass cards and sections
-    document.querySelectorAll('.glass-card, .section-title').forEach(el => {
-        observer.observe(el);
-    });
-}
-
-// Add scroll animation styles
-const style = document.createElement('style');
-style.textContent = `
-    .glass-card, .section-title {
-        opacity: 0;
-        transform: translateY(30px);
-        transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), 
-                    transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    .glass-card.animate-in, .section-title.animate-in {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    
-    .terminal-output::-webkit-scrollbar {
-        width: 6px;
-    }
-    
-    .terminal-output::-webkit-scrollbar-track {
-        background: rgba(0, 0, 0, 0.3);
-    }
-    
-    .terminal-output::-webkit-scrollbar-thumb {
-        background: rgba(var(--color-primary-rgb), 0.5);
-        border-radius: 3px;
-    }
-    
-    .terminal-output::-webkit-scrollbar-thumb:hover {
-        background: rgba(var(--color-primary-rgb), 0.7);
-    }
-`;
-document.head.appendChild(style);
-
-// Initialize on page load
-window.addEventListener('load', function() {
-    console.log('Ayan Nalawade Portfolio - Clean Professional Design Loaded');
-});
+// don't hide anything until we know the page is painting - a frozen or backgrounded page
+// never gets a frame, so the inits simply never run and it stays complete and static
+requestAnimationFrame(runInits);

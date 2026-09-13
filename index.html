@@ -1,177 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ayan Nalawade - Developer Portfolio</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>Ayan Nalawade</title>
+<meta name="description" content="Ayan Nalawade &mdash; Grade 12 student @ LHSS. A 1-bit full adder built from loose transistors, a sumo bot, and a chess policy network.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Work+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Background Container -->
-    <div class="background-container">
-        <div class="tech-background"></div>
-        <div class="gradient-overlay"></div>
-    </div>
+<canvas class="park" id="park" aria-hidden="true"></canvas>
 
-    <!-- Navigation -->
-    <nav class="glass-nav">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <span class="glass-text">Ayan Nalawade</span>
-            </div>
-            <div class="nav-menu">
-                <a href="#hero" class="nav-link glass-button">About</a>
-                <a href="#terminal" class="nav-link glass-button">Terminal</a>
-                <a href="#projects" class="nav-link glass-button">Projects</a>
-                <a href="#contact" class="nav-link glass-button">Contact</a>
-            </div>
-            <div class="profile-image-container">
-                <img src="https://github.com/Ayan-Nalawade.png" alt="Ayan Nalawade" class="profile-image">
-            </div>
-        </div>
+<div class="stage">
+
+<div class="panel">
+<header class="stop stop-street">
+  <div class="sky-text">
+    <p class="hey">Hey, it's</p>
+    <h1>Ayan Nalawade</h1>
+    <p class="line">Grade 12 Student @ LHSS</p>
+    <nav class="links" aria-label="Contact">
+      <a class="link" href="https://github.com/Ayan-Nalawade">GitHub</a>
+      <a class="link" href="https://www.linkedin.com/in/ayan-nalawade-5a9475355">LinkedIn</a>
+      <a class="link" href="mailto:ayannalawade@gmail.com">Email</a>
     </nav>
+    <p class="hint">scroll &rarr;</p>
+  </div>
+</header>
+</div>
 
-    <!-- Hero Section -->
-    <section id="hero" class="hero-section">
-        <div class="hero-container">
-            <div class="hero-content">
-                <div class="glass-card hero-card">
-                    <h1 class="hero-title glass-text-large">Ayan Nalawade</h1>
-                    <p class="hero-subtitle">16-year-old developer who likes working on projects that are challenging!</p>
-                    <div class="hero-info">
-                        <div class="info-item">
-                            <span class="info-label">Location:</span>
-                            <span>Ontario, CA</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Timezone:</span>
-                            <span>UTC-04:00</span>
-                        </div>
-                    </div>
-                    <div class="hero-actions">
-                        <a href="#projects" class="glass-button glass-button-primary">View Projects</a>
-                        <a href="https://github.com/Ayan-Nalawade" target="_blank" class="glass-button glass-button-secondary">GitHub Profile</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+<main>
 
-    <!-- Terminal Section -->
-    <section id="terminal" class="terminal-section">
-        <div class="container">
-            <h2 class="section-title glass-text">Interactive Terminal</h2>
-            <div class="terminal-container glass-card">
-                <div class="terminal-header">
-                    <div class="terminal-buttons">
-                        <span class="terminal-button terminal-close"></span>
-                        <span class="terminal-button terminal-minimize"></span>
-                        <span class="terminal-button terminal-maximize"></span>
-                    </div>
-                    <div class="terminal-title">ayan@portfolio:~$</div>
-                </div>
-                <div class="terminal-body">
-                    <div class="terminal-output" id="terminal-output">
-                        <div class="terminal-line">Welcome to Ayan's Portfolio Terminal v1.0</div>
-                        <div class="terminal-line">Type 'help' to see available commands.</div>
-                        <div class="terminal-line"></div>
-                    </div>
-                    <div class="terminal-input-line">
-                        <span class="terminal-prompt">ayan@portfolio:~$ </span>
-                        <input type="text" class="terminal-input" id="terminal-input" autofocus>
-                        <span class="terminal-cursor" id="terminal-cursor">|</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+<div class="panel">
+<section class="stop stop-gate" id="about">
+  <div class="sign-wrap">
+    <div class="sign">
+      <div class="sign-inner">
+        <p class="sign-title">Ayan Nalawade</p>
+        <p>I'm in Grade 12 at Laurel Heights. Most of what I make ends up on the blog: a full adder built from loose transistors, a sumo bot that taught me to trust the datasheet over the schematic, and a lot of hackathons.</p>
+        <p>I like the part of a project where it doesn't work yet. That's usually where I learn something.</p>
+        <p>When I'm not building, I'm playing chess or badminton, or off somewhere with air cadets.</p>
+      </div>
+    </div>
+    <div class="post" aria-hidden="true"></div>
+  </div>
+</section>
+</div>
 
-    <!-- Projects Section -->
-    <section id="projects" class="projects-section">
-        <div class="container">
-            <h2 class="section-title glass-text">Featured Projects</h2>
-            <div class="projects-grid" id="projects-grid">
-                <!-- Projects will be populated by JavaScript -->
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="contact-section">
-        <div class="container">
-            <h2 class="section-title glass-text">Let's Connect</h2>
-            <div class="contact-grid">
-                <div class="contact-card glass-card">
-                    <h3>Location & Time</h3>
-                    <div class="contact-info">
-                        <div class="contact-item">
-                            <span class="contact-label">Location:</span>
-                            <span>Ontario, CA</span>
-                        </div>
-                        <div class="contact-item">
-                            <span class="contact-label">Timezone:</span>
-                            <span>UTC-04:00</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="contact-card glass-card">
-                    <h3>Online Presence</h3>
-                    <div class="contact-links">
-                        <a href="https://github.com/Ayan-Nalawade" target="_blank" class="contact-link glass-button">
-                            <span>GitHub</span>
-                        </a>
-                        <a href="https://ayan-nalawade.vercel.app/" target="_blank" class="contact-link glass-button">
-                            <span>Website</span>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="contact-card glass-card">
-                    <h3>Hobbies & Interests</h3>
-                    <div class="hobbies-list">
-                        <div class="hobby-item">
-                            <div>
-                                <div class="hobby-name">Chess</div>
-                                <div class="hobby-desc">Strategic thinking and problem solving</div>
-                            </div>
-                        </div>
-                        <div class="hobby-item">
-                            <div>
-                                <div class="hobby-name">Badminton and Soccer</div>
-                                <div class="hobby-desc">Staying active and competitive</div>
-                            </div>
-                        </div>
-                        <div class="hobby-item">
-                            <div>
-                                <div class="hobby-name">Video Games</div>
-                                <div class="hobby-desc">Gaming and interactive experiences</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Project Details Modal -->
-    <div id="project-modal" class="modal hidden">
-        <div class="modal-overlay">
-            <div class="modal-content glass-card">
-                <div class="modal-header">
-                    <h3 id="modal-title"></h3>
-                    <button class="modal-close glass-button">×</button>
-                </div>
-                <div class="modal-body">
-                    <div id="project-content">Loading project details...</div>
-                </div>
-            </div>
-        </div>
+<div class="panel">
+<section class="stop stop-board" id="blog">
+  <div class="board">
+    <div class="board-head">
+      <p class="board-title">From the blog</p>
+      <p class="board-cap">pulled live from ayannalawade-website.vercel.app</p>
     </div>
 
-    <script src="app.js"></script>
+    <div class="pins pins-photo" id="pins">
+      <a class="pin pin-photo" href="https://ayannalawade-website.vercel.app/">
+        <img src="https://ayannalawade-website.vercel.app/image_data/FullAdderBreadboard/FinalThumbnail.png" alt="Building My Own Full Adder" loading="lazy" referrerpolicy="no-referrer">
+        <span class="pin-title">Building My Own Full Adder</span>
+      </a>
+      <a class="pin pin-photo" href="https://ayannalawade-website.vercel.app/">
+        <img src="https://ayannalawade-website.vercel.app/image_data/SumoBot/SumoBotDesign.png" alt="Sumo Bot 2025" loading="lazy" referrerpolicy="no-referrer">
+        <span class="pin-title">Sumo Bot 2025</span>
+      </a>
+      <a class="pin pin-photo" href="https://ayannalawade-website.vercel.app/">
+        <img src="https://ayannalawade-website.vercel.app/image_data/ChessHacks/outbot.png" alt="Chess Hacks 2025" loading="lazy" referrerpolicy="no-referrer">
+        <span class="pin-title">Chess Hacks 2025</span>
+      </a>
+      <a class="pin pin-photo" href="https://ayannalawade-website.vercel.app/">
+        <img src="https://ayannalawade-website.vercel.app/image_data/DocsGPT/Homepage.png" alt="JamHacks 9 (2025)" loading="lazy" referrerpolicy="no-referrer">
+        <span class="pin-title">JamHacks 9 (2025)</span>
+      </a>
+      <a class="pin pin-photo" href="https://ayannalawade-website.vercel.app/">
+        <img src="https://ayannalawade-website.vercel.app/image_data/SpurHacks/MainPage.png" alt="SpurHacks 2025" loading="lazy" referrerpolicy="no-referrer">
+        <span class="pin-title">SpurHacks 2025</span>
+      </a>
+      <a class="pin pin-photo" href="https://ayannalawade-website.vercel.app/">
+        <img src="https://ayannalawade-website.vercel.app/image_data/Catalyst/WithOurTeam.jpg" alt="Catalyst" loading="lazy" referrerpolicy="no-referrer">
+        <span class="pin-title">Catalyst</span>
+      </a>
+    </div>
+
+    <div class="pins pins-card">
+      <a class="pin pin-card" href="https://github.com/Ayan-Nalawade/Chat">
+        <span class="card-name">Chat</span>
+        <span class="card-line">Free GPT-4 and Claude access back when API keys were scarce.</span>
+        <span class="card-lang">Python</span>
+      </a>
+      <a class="pin pin-card" href="https://github.com/Ayan-Nalawade/ChessHacks">
+        <span class="card-name">ChessHacks</span>
+        <span class="card-line">A policy network trained on Lichess games, to see if it could beat me.</span>
+        <span class="card-lang">PyTorch</span>
+      </a>
+      <a class="pin pin-card" href="https://github.com/Ayan-Nalawade/JamHacks-DocsGPT">
+        <span class="card-name">DocsGPT</span>
+        <span class="card-line">An AI documentation assistant, built over a weekend at JamHacks 9.</span>
+        <span class="card-lang">TypeScript</span>
+      </a>
+      <a class="pin pin-card" href="https://github.com/Ayan-Nalawade/GS-Onboarding">
+        <span class="card-name">GS-Onboarding</span>
+        <span class="card-line">Ground-station firmware onboarding for a satellite team.</span>
+        <span class="card-lang">Python</span>
+      </a>
+    </div>
+  </div>
+</section>
+</div>
+
+</main>
+
+<div class="panel">
+<footer class="stop stop-tree" id="contact">
+  <div class="sky-text">
+    <h2>That's the walk.</h2>
+    <p class="line">The afternoon's over on the blog.</p>
+    <a class="btn" href="https://ayannalawade-website.vercel.app/">Read the blog &rarr;</a>
+    <nav class="links" aria-label="Contact">
+      <a class="link" href="https://github.com/Ayan-Nalawade">GitHub</a>
+      <a class="link" href="https://www.linkedin.com/in/ayan-nalawade-5a9475355">LinkedIn</a>
+      <a class="link" href="mailto:ayannalawade@gmail.com">Email</a>
+    </nav>
+    <p class="colophon">Made with VS Code</p>
+  </div>
+</footer>
+</div>
+
+</div>
+
+<script src="scene.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
